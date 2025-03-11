@@ -27,4 +27,11 @@ public interface EmployeeService {
     Employee findById(String id);
     
     boolean updateEmployee(Employee employee);
+    
+    /**
+     *   根据传入用户名与密码进行数据库比对并返回身份组
+     *   @param conditions 检索条件
+     *   @return 能否登录+身份
+     */
+    public void loginSearch(Employee employee);
 }

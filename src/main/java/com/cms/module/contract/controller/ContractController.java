@@ -204,21 +204,26 @@ public class ContractController {
     	LocalDateTime update_origin = service.getUpdateTime(contract_id);
     	LocalDateTime update_compare = input.getUpdate_time();
         Map<String, Object> response = new HashMap<>();
-        if(update_origin.isBefore(update_compare)||update_origin.isEqual(update_compare)) {
-        	boolean updated = service.updateContract(input);
-        	if(updated) {
-        		response.put("message", "登録が成功しました");
-                response.put("status", "success");
-        	}
-        	else {
-                response.put("message", "登録に失敗しました");
-                response.put("status", "error");
-        	}
-        }
-        else {
-            response.put("message", "項目はすでに更新されました、再検索して直してください。");
-            response.put("status", "updated");
-        }
+        try {
+		        if(update_origin.isBefore(update_compare)||update_origin.isEqual(update_compare)) {
+		        	boolean updated = service.updateContract(input);
+		        	if(updated) {
+		        		response.put("message", "登録が成功しました");
+		                response.put("status", "success");
+		        	}
+		        	else {
+		                response.put("message", "登録に失敗しました");
+		                response.put("status", "error");
+		        	}
+		        }
+		        else {
+		            response.put("message", "項目はすでに更新されました、再検索して直してください。");
+		            response.put("status", "updated");
+		        }
+	        }catch(Exception e) {
+	    		response.put("message", "削除失敗しました: " + e.getMessage());
+	            response.put("status", "error");
+	        }
         return response;
     }
     /**
@@ -305,17 +310,22 @@ public class ContractController {
     	LocalDateTime update_origin = service.getUpdateTime(contract_id);
     	LocalDateTime update_compare = input.getUpdate_time();
     	Map<String, Object> conditions = new HashMap<>();
-    	if(update_origin.isBefore(update_compare)||update_origin.isEqual(update_compare)) {
-    	   if (input.getContract_id() != 0) {
-              conditions.put("contract_id", input.getContract_id());
-           }
-    	   return service.deleteSelected(conditions);    
+    	try{
+    		if(update_origin.isBefore(update_compare)||update_origin.isEqual(update_compare)) {
+    			if (input.getContract_id() != 0) {
+    				conditions.put("contract_id", input.getContract_id());
+    			}
+    			return service.deleteSelected(conditions);    
+    			}
+    		else {
+    			conditions.put("message", "項目はすでに更新されました、再検索して直してください。");
+    			conditions.put("status", "error");
+    			}
+    	}catch(Exception e) {
+    		conditions.put("message", "削除失敗しました: " + e.getMessage());
+            conditions.put("status", "error");
     	}
-    	else {
-			conditions.put("message", "項目はすでに更新されました、再検索して直してください。");
-			conditions.put("status", "error");
-			return conditions;
-    	}
+    	return conditions;
     }
     
     /**

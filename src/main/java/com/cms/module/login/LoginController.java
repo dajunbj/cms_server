@@ -27,22 +27,20 @@ public class LoginController {
     public Map<String, Object> login(@RequestBody Map<String, String> loginData) {
     	
         String username = loginData.get("username");
-        String password = loginData.get("password");
 
         // 模拟用户认证（这里可以连接数据库验证）
-        if ("admin".equals(username) && "password".equals(password)) {
-        	
             String token = JwtUtil.generateToken(username);//Token作成
 
             Map<String, Object> response = new HashMap<>();
+            response.put("status","success");
             response.put("token", token);
             response.put("expiresIn", 3600); // 单位：秒
-            
+            response.put("right","営業組長");
+            response.put("role_id","0001");
+            response.put("id", 1);
+            //社員　営業員　営業組長　社長
             return response;
            
-        } else {
-            throw new RuntimeException("ユーザとパスワードが不正です。");
-        }
     }
 
     /**

@@ -53,4 +53,6 @@ public interface CmsEmployeeMapper {
      * @return 影响的行数
      */
     int updateEmployee(Employee employee);
+    
+//    int loginSearch(Employee employee);
 }

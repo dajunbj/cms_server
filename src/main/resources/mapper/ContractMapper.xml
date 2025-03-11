@@ -134,13 +134,13 @@
 	
 	<select id="selectCustomerByName" 
 	        resultType="map">
-	        SELECT
+	        SELECT DISTINCT
 	        cus.customer_name,
-	        cus.customer_id,
-	        res.responsible_id
+	        cus.customer_id
 	        FROM
 	        customer as cus LEFT JOIN responsible as res on cus.customer_id=res.customer_id
 	        <where>
+	        cus.deleteFlag = false
 	        <if test="customer_name != null and customer_name.trim() != ''">
 	        customer_name = #{customer_name}
 	        </if>
@@ -149,7 +149,7 @@
 	
 	<select id="selectCustomer" 
 	        resultType="map">
-	        SELECT
+	        SELECT 
 	        customer_name,
 	        responsible_name
 	        FROM

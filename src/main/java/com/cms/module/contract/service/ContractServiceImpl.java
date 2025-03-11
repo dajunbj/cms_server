@@ -31,6 +31,7 @@ public class ContractServiceImpl implements ContractService {
         Map<String, Object> result = new HashMap<>();
         result.put("data", results); // 当前页数据
         result.put("total", recordCount); // 总条目数
+        result.put("status","success");
         return result;
 
     }
@@ -132,9 +133,16 @@ public class ContractServiceImpl implements ContractService {
 		List<ContractBean> results = mapper.selectCustomer(conditions);
 		Map<String, Object> result = new HashMap<>();
 		result.put("data", results);
+		result.put("status","success");
 		return result;
 	}
 	
+	/**
+     * 删除处理
+     *
+     * @param contract_id
+     * @return 处理结果
+     */
 	public Map<String, Object> deleteSelected(Map<String, Object>conditions){
 		Map<String, Object> result = new HashMap<>();
 		try {
