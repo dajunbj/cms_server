@@ -1,14 +1,13 @@
 package com.cms.module.employee.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cms.module.employee.entity.Employee;
-import com.cms.module.employee.mapper.CmsEmployeeMapper;
+import com.cms.module.employee.entity.Employees;
+import com.cms.module.employee.mapper.EmployeesMapper;
 
 /**
  * Employee のサービスクラス
@@ -18,26 +17,29 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	/**複数テーブル処理*/
 	@Autowired
-	CmsEmployeeMapper mapper;
+	EmployeesMapper mapper;
 	
-    public Map<String, Object> findAllWithPagination(Map<String, Object> conditions) {
 
-    	int recordCount = mapper.selectCount(conditions);
-    	
-    	List<Employee> results = mapper.select(conditions);
-    	
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", results); // 当前页数据
-        result.put("total", recordCount); // 总条目数
-        return result;
-
-    }
 
 	@Override
-	public void saveEmployee(Employee employee) {
-
-		mapper.insertEmployee(employee);
+	public int selectCouint(Map<String, Object> conditions) {
+		return mapper.selectCount(conditions);
 	}
+	
+	/**
+	 * 社員検索処理
+	 * 
+	 * @param conditions 検索条件
+	 * @return 検索欠課
+	 **/
+
+    public List<Employees> searchAllData(Map<String, Object> conditions) {
+    	
+    	List<Employees> results = mapper.select(conditions);
+   
+        return results;
+    }
+
 	
 	  /**
      * 根据ID获取员工详情
@@ -45,9 +47,8 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param id 员工ID
      * @return 员工详情
      */
-    @Override
-    public Employee findById(String id) {
-        return mapper.findById(id);
+    public Employees searchSingleById(String id) {
+        return mapper.selectOne(id);
     }
 
     /**
@@ -56,24 +57,38 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employee 员工实体
      * @return 更新是否成功
      */
-    @Override
-    public boolean updateEmployee(Employee employee) {
-        return mapper.updateEmployee(employee) > 0;
+    public void updateData(Employees employee) {
+    	
+        mapper.update(employee);
     }
 
-	public void loginSearch(Employee employee) {
+
+	public void registData(Employees obj) {
 		
 	}
- 
-//    /**
-//     * IDでエンティティを削除
-//     * @param id エンティティのID
-//     * @return 削除成功かどうか
-//     */
-//    @Override
-//    public boolean deleteById(Long id) {
-//        return employeeMapper.deleteById(id) > 0;
-//    }
 
-    
+
+	public void deleteDataById(Employees obj) {
+		
+	}
+
+	@Override
+	public void deleteAll(List<Integer> ids) {
+
+		mapper.deleteByIds(ids);
+
+	}
+
+	@Override
+	public void initEdit(String id) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void initDetail(String id) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
 }

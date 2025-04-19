@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import com.cms.module.contract.entity.CaseBean;
 import com.cms.module.contract.entity.ContractBean;
 import com.cms.module.contract.form.ContractForm;
-import com.cms.module.employee.entity.Employee;
+import com.cms.module.employee.entity.Employees;
 
 /**
  * ユーザー情報 Mapper
@@ -49,7 +49,7 @@ public interface ContractMapper {
      * @param employeeId 员工ID
      * @return 员工信息
      */
-    Employee findById(@Param("employeeId") String employeeId);
+    Employees findById(@Param("employeeId") String employeeId);
 
     
 	 /**

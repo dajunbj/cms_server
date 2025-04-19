@@ -1,8 +1,9 @@
-package com.cms.module.login;
+package com.cms.module.login.controller;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,12 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.common.util.JwtUtil;
+import com.cms.module.login.service.LoginService;
 
 @RestController
 //@CrossOrigin(origins = "http://localhost:8081") // 允许从指定域访问
 @RequestMapping("/auth")
 public class LoginController {
 
+	@Autowired
+	private LoginService service;
+	
     /**
      * ログインロジック
      * 
@@ -24,21 +29,23 @@ public class LoginController {
      * @return Token情報
      */
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> loginData) {
+    public Map<String, Object> login(@RequestBody Map<String, Object> loginData) {
     	
-        String username = loginData.get("username");
 
-        // 模拟用户认证（这里可以连接数据库验证）
-        String token = JwtUtil.generateToken(username);//Token作成
+        int ct = service.searchLoginInfo(loginData);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("status",true);
-        response.put("token", token);
-        response.put("expiresIn", 3600); // 单位：秒
-        response.put("right","営業組長");
-        response.put("role_id","0001");
-        response.put("id", 1);
-        //社員　営業員　営業組長　社長
+        if (ct > 0) {
+        	
+            String token = JwtUtil.generateToken((String)loginData.get("username"));//Token作成
+
+        	response.put("success", true);
+            response.put("token", token);
+            response.put("expiresIn", 3600); // 单位：秒
+        } else {
+        	response.put("success", false);
+        	response.put("message", "ユーザとパスワードが正しくないです。");
+        }
         
         return response;
     }
