@@ -42,6 +42,7 @@ public class LoginController {
         	response.put("success", true);
             response.put("token", token);
             response.put("expiresIn", 3600); // 单位：秒
+        	response.put("message", "");
         } else {
         	response.put("success", false);
         	response.put("message", "ユーザとパスワードが正しくないです。");

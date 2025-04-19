@@ -75,7 +75,7 @@
 	    </if>
 	</insert>
 	
-<select id="findById" resultType="com.cms.module.employee.entity.Employee">
+<select id="findById" resultType="com.cms.module.employee.entity.Employees">
     SELECT * FROM cms_employee WHERE employeeId = #{employeeId}
 </select>
 
