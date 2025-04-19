@@ -38,7 +38,7 @@ public interface ContractMapper {
 	 /**
      * 插入员工信息
      * 
-     * @param employee 员工实体
+     * @param ContractBean 员工实体
      * @return 影响的行数
      */
     int insertContract(ContractBean input);
@@ -127,7 +127,6 @@ public interface ContractMapper {
     int updateContract(ContractBean input);
     
     LocalDateTime getUpdateTime(int contract_id);
-//    int loginSearch(Employee employee);
 }
 
 

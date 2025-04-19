@@ -11,7 +11,7 @@ import com.cms.api.form.ApiForm;
 import com.cms.api.mapper.ApiMapper;
 
 /**
- * Employee のサービスクラス
+ * Employees のサービスクラス
  */
 @Service
 public class ApiServiceImpl implements ApiService {
