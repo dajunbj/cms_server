@@ -60,6 +60,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     public boolean updateEmployee(Employee employee) {
         return mapper.updateEmployee(employee) > 0;
     }
+
+	public void loginSearch(Employee employee) {
+		
+	}
  
 //    /**
 //     * IDでエンティティを削除
