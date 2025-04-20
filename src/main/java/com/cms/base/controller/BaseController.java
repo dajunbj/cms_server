@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * 親クラス
  */
-public class BaseController {
+public class BaseController extends SessionBase {
 
 	private boolean STATUS_SUCCESS = true;
 	private boolean STATUS_FAILURE = false;

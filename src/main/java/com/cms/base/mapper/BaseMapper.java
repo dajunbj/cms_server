@@ -20,7 +20,7 @@ public interface BaseMapper<T, ID> {
     /**
      * 根据ID获取记录
      */
-    T selectOne(ID id);
+    T selectOne(Map<String, Object> conditions);
     
     /**
      * 插入一条记录

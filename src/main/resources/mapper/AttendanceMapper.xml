@@ -42,4 +42,20 @@
 	  LEFT JOIN employees e ON a.employee_id = e.employee_id
 
 	</select>
+	
+	<select id="getMonthlyData" 
+	 parameterType="map" 
+	 resultType="com.cms.module.attendance.entity.Attendance">
+		  SELECT
+		    *
+		  FROM attendance_sheet
+		  <where>
+		    <if test="employee_id != null and employee_id != ''">
+		      AND employee_id = #{employee_id}
+		    </if>
+		    <if test="month != null and month != ''">
+		      AND DATE_FORMAT(date, '%Y-%m') = #{month}
+		    </if>
+		  </where>
+	</select>
 </mapper>

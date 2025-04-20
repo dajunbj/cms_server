@@ -7,7 +7,7 @@ public class Attendance {
     private Integer sheet_id;
     private Integer employee_id;
     private Integer contract_id;
-    private String date;
+    private String workday;
     private String start_time;
     private String end_time;
     private Double working_hours;

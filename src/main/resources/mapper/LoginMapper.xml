@@ -20,6 +20,21 @@
 	        </if>
         </where>
 	</select>
-	
+	<select id="selectOne"
+        parameterType="map"
+        resultType="com.cms.module.employee.entity.Employees">
+        SELECT
+        * 
+        FROM
+        employees
+        <where>
+	        <if test="username != null  and username.trim() != ''">
+	        	and login_id = #{username}
+	        </if>
+	        <if test="password != null  and password.trim() != ''">
+	        	and pwd = #{password}
+	        </if>
+        </where>
+	</select>
 
 </mapper>

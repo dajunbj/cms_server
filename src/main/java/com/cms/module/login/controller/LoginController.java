@@ -11,13 +11,17 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.base.controller.BaseController;
 import com.cms.common.util.JwtUtil;
+import com.cms.module.employee.entity.Employees;
 import com.cms.module.login.service.LoginService;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 //@CrossOrigin(origins = "http://localhost:8081") // 允许从指定域访问
 @RequestMapping("/auth")
-public class LoginController {
+public class LoginController extends BaseController{
 
 	@Autowired
 	private LoginService service;
@@ -29,16 +33,18 @@ public class LoginController {
      * @return Token情報
      */
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, Object> loginData) {
-    	
+    public Map<String, Object> login(@RequestBody Map<String, Object> loginData,HttpSession session) {
 
-        int ct = service.searchLoginInfo(loginData);
+    	Employees ct = service.getLoginInfo(loginData);
 
         Map<String, Object> response = new HashMap<>();
-        if (ct > 0) {
-        	
-            String token = JwtUtil.generateToken((String)loginData.get("username"));//Token作成
+        if (ct != null) {
 
+            //ログイン情報をセッションに保存
+            setLoginInfo(session, "userinfo", ct);
+            
+            //Token作成
+            String token = JwtUtil.generateToken((String)loginData.get("username"));
         	response.put("success", true);
             response.put("token", token);
             response.put("expiresIn", 3600); // 单位：秒

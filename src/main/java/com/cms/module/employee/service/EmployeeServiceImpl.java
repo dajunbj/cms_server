@@ -1,5 +1,6 @@
 package com.cms.module.employee.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +19,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 	/**複数テーブル処理*/
 	@Autowired
 	EmployeesMapper mapper;
-	
-
 
 	@Override
 	public int selectCouint(Map<String, Object> conditions) {
@@ -30,36 +29,38 @@ public class EmployeeServiceImpl implements EmployeeService {
 	 * 社員検索処理
 	 * 
 	 * @param conditions 検索条件
-	 * @return 検索欠課
+	 * @return 検索結果
 	 **/
-
     public List<Employees> searchAllData(Map<String, Object> conditions) {
     	
     	List<Employees> results = mapper.select(conditions);
-   
+
         return results;
     }
 
 	
-	  /**
-     * 根据ID获取员工详情
+    /**
+     * 社員IDをキーにし、社員情報を抽出する
      *
-     * @param id 员工ID
-     * @return 员工详情
+     * @param id 社員ID
+     * @return 社員情報
      */
     public Employees searchSingleById(String id) {
-        return mapper.selectOne(id);
+    	
+    	Map<String, Object> param = new HashMap<String, Object>();
+    	param.put("employee_id", id);
+    	
+    	return mapper.selectOne(param);
     }
 
     /**
-     * 更新员工信息
+     * 社員情報更新
      *
-     * @param employee 员工实体
-     * @return 更新是否成功
+     * @param employee 社員情報
      */
-    public void updateData(Employees employee) {
+    public void updateData(Employees info) {
     	
-        mapper.update(employee);
+        mapper.update(info);
     }
 
 

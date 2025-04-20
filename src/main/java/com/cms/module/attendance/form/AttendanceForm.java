@@ -10,9 +10,14 @@ import lombok.Data;
 @Data
 public class AttendanceForm {
 
-    private Integer employee_id;         // 上方输入的社員ID
-    private Integer contract_id;         // 契約ID
-    private String month;                // 勤怠年月（yyyy-MM）
+    //社員ID
+    private Integer employee_id;
+    //社員名
+    private String employeeName;
+    //契約ID
+    private Integer contract_id;
+    //勤怠年月（yyyy-MM）
+    private String month;                
 
     private List<Attendance> attendanceList; // 勤怠明細リスト
 }

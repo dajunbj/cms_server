@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cms.module.employee.entity.Employees;
 import com.cms.module.login.mapper.LoginMapper;
 
 /**
@@ -17,9 +18,9 @@ public class LoginServiceImpl implements LoginService {
 	@Autowired
 	LoginMapper mapper;
 	
-    public int searchLoginInfo(Map<String, Object> conditions) {
+	@Override
+	public Employees getLoginInfo(Map<String, Object> conditions) {
 
-    	
-        return mapper.selectCount(conditions);
+        return mapper.selectOne(conditions);
     }
 }

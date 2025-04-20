@@ -72,4 +72,15 @@ public class AttendanceServiceImpl implements AttendanceService {
 		
 	}
 
+	/**勤務初期データ取得
+	 *
+	 * @param conditions 処理条件
+	 * @return 勤務データ
+	 */
+	@Override
+	public List<Attendance> getMonthlyData(Map<String, Object> conditions) {
+		
+		return mapper.getMonthlyData(conditions);
+	}
+
 }

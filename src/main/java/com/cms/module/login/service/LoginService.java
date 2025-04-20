@@ -2,6 +2,8 @@ package com.cms.module.login.service;
 
 import java.util.Map;
 
+import com.cms.module.employee.entity.Employees;
+
 /**
  * 共通サービス層の基底抽象クラス。
  * 基本的なCRUDメソッドを提供し、必要に応じてオーバーライド可能。
@@ -12,8 +14,7 @@ public interface LoginService {
     /**
      * IDでエンティティを検索
      * @param conditions 検索条件
-     * @return エンティティオブジェクト
+     * @return ログインユーザ
      */
-    public int searchLoginInfo(Map<String, Object> conditions);
-
+    public Employees getLoginInfo(Map<String, Object> conditions);
 }
