@@ -73,6 +73,23 @@
 	  GROUP BY a.employee_id, DATE_FORMAT(a.workday, '%Y-%m')
 	  ORDER BY a.employee_id, DATE_FORMAT(a.workday, '%Y-%m')
 	</select>
+	
+    <select id="getMonthlyDataByEmployeeId" parameterType="map" resultType="com.cms.module.attendance.entity.Attendance">
+	  SELECT
+	    a.*,
+	    e.name as employeeName
+	  FROM attendance_sheet a
+	  LEFT JOIN employees e ON a.employee_id = e.employee_id
+	  <where>
+	  	<if test="employee_id != null and employee_id != ''">
+	      AND e.employee_id = #{employee_id}
+	    </if>
 
+	    <if test="month != null and month != ''">
+	      AND DATE_FORMAT(a.workday, '%Y-%m') = #{month}
+	    </if>
+	  </where>
+	  ORDER BY DATE_FORMAT(a.workday, '%Y-%m')
+	</select>
 
 </mapper>

@@ -72,7 +72,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 		
 	}
 
-	/**勤務初期データ取得
+	/**勤務一覧画面検索
 	 *
 	 * @param conditions 処理条件
 	 * @return 勤務データ
@@ -83,4 +83,19 @@ public class AttendanceServiceImpl implements AttendanceService {
 		return mapper.getMonthlyData(conditions);
 	}
 
+	/**勤務登録画面初期化
+	 *
+	 * @param conditions 処理条件
+	 * @return 勤務データ
+	 */
+	@Override
+	public List<Attendance> getMonthDataByEmployeeId(Map<String, Object> conditions) {
+		List<Attendance> ret = mapper.getMonthlyDataByEmployeeId(conditions);
+		if (ret != null && ret.size() > 0) {
+			return ret;
+		} else {
+			
+		}
+		return ret;
+	}
 }

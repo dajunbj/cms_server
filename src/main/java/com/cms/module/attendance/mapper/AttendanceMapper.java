@@ -15,4 +15,6 @@ public interface AttendanceMapper  extends BaseMapper<Attendance, String> {
      * 统计符合条件的记录数
      */
 	List<Attendance>  getMonthlyData(Map<String, Object> conditions);
+	List<Attendance>  getMonthlyDataByEmployeeId(Map<String, Object> conditions);
+	
 }

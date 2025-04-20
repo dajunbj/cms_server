@@ -75,25 +75,40 @@ public class AttendanceController extends BaseController {
     }
 
     
-	  @PostMapping("/registerview/registInit")
-	  public ResponseEntity<?> registerAttendanceInit( HttpSession session) {
+      /**
+       *登録画面初期化
+       *
+       *@param month 勤務付月
+       *@param session
+       */
+      @PostMapping("/registerview/registInit")
+	  public ResponseEntity<?> registerAttendanceInit(@RequestBody Map<String, Object> input, HttpSession session) {
+		  
 	      AttendanceForm form = new AttendanceForm();
 
+	      //ログイン情報取得
 	      Employees info = getLoginInfo(session, "userinfo", Employees.class);
 	      
-	      //社員情報設定
-	      form.setEmployee_id(info.getEmployee_id());
-	      form.setEmployeeName(info.getName());
-
-	      //勤怠検索
+	      // 月パラメータ取得（空なら現在月に設定）
+	      String month = input.get("month") != null ? input.get("month").toString() : "";
+          // システムの現在年月取得（yyyy-MM）
+          java.time.LocalDate now = java.time.LocalDate.now();
+          month = now.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"));
+	      //引数検索
 	      Map<String,Object> param = new HashMap<String,Object>();
-	      List<Attendance> result = service.getMonthlyData(param);
+	      param.put("employee_id", info.getEmployee_id());
+	      param.put("month", month);
+	      
+	      List<Attendance> result = service.getMonthDataByEmployeeId(param);
+	      
 	      if (result != null && result.size() > 0) {
 	          //社員の勤怠情報がある場合
               form.setAttendanceList(result);
+	      } else {
+	    	  
 	      }
 	      
-	      return ResultUtils.success(form);
+	      return ResultUtils.success(result);
 	  }
     
 //    @PostMapping("/registerview/regist")
