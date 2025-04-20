@@ -1,9 +1,12 @@
 package com.cms.module.attendance.entity ;
 
+import java.math.BigDecimal;
+
 import lombok.Data;
 
 @Data
 public class Attendance {
+	
     private Integer sheet_id;
     private Integer employee_id;
     private Integer contract_id;
@@ -18,6 +21,14 @@ public class Attendance {
     private Boolean is_leave_used;
     private Integer holiday_used_id;
     private String notes;
-    private Boolean is_modified; // 新增字段：判断是否需要更新
+    private Boolean is_modified; 
+    
+    // 社員名
     private String employeeName;
+    // 勤務月
+    private String workmonth;
+    // 月別勤務時間
+    private BigDecimal workhours;
+    // 勤務日数
+    private int workday_count;
 }

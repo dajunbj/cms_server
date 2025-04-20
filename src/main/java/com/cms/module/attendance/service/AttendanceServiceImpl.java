@@ -27,7 +27,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	public List<Attendance> searchAllData(Map<String, Object> conditions) {
 		
-		return mapper.select(conditions);
+		return mapper.getMonthlyData(conditions);
 	}
 
 	@Override

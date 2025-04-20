@@ -4,7 +4,7 @@
 <mapper
 	namespace="com.cms.module.attendance.mapper.AttendanceMapper">
 
-	<select id="selectByMonth"
+	<select id="selectByMonth" 
 		resultType="com.cms.module.attendance.entity.Attendance">
 		SELECT * FROM attendance_sheet
 		WHERE employee_id = #{employee_id} AND DATE_FORMAT(date, '%Y-%m') =
@@ -34,28 +34,45 @@
 		WHERE sheet_id = #{sheet_id}
 	</update>
 	
-	<select id="select" resultType="com.cms.module.attendance.entity.Attendance">
+	<select id="select" parameterType="map" resultType="com.cms.module.attendance.entity.Attendance">
 	  SELECT
 	    a.*,
 	    e.name AS employeeName
 	  FROM attendance_sheet a
 	  LEFT JOIN employees e ON a.employee_id = e.employee_id
-
+	  <where>
+	    <if test="employee_id != null">
+	      AND a.employee_id = #{employee_id}
+	    </if>
+	    <if test="month != null and month != ''">
+	      AND DATE_FORMAT(a.workday, '%Y-%m') = #{month}
+	    </if>
+	    <if test="employeeName != null and employeeName != ''">
+	      AND e.name LIKE CONCAT('%', #{employeeName}, '%')
+	    </if>
+	  </where>
 	</select>
 	
-	<select id="getMonthlyData" 
-	 parameterType="map" 
-	 resultType="com.cms.module.attendance.entity.Attendance">
-		  SELECT
-		    *
-		  FROM attendance_sheet
-		  <where>
-		    <if test="employee_id != null and employee_id != ''">
-		      AND employee_id = #{employee_id}
-		    </if>
-		    <if test="month != null and month != ''">
-		      AND DATE_FORMAT(date, '%Y-%m') = #{month}
-		    </if>
-		  </where>
+	<select id="getMonthlyData" parameterType="map" resultType="com.cms.module.attendance.entity.Attendance">
+	  SELECT
+	    a.employee_id,
+	    e.name AS employeeName,
+	    DATE_FORMAT(a.workday, '%Y-%m') AS workmonth,   
+	    SUM(a.working_hours) AS workhours,
+	    COUNT(DISTINCT a.workday) AS workday_count
+	  FROM attendance_sheet a
+	  LEFT JOIN employees e ON a.employee_id = e.employee_id
+	  <where>
+	    <if test="employeeName != null and employeeName != ''">
+	      AND e.name LIKE CONCAT('%', #{employeeName}, '%')
+	    </if>
+	    <if test="month != null and month != ''">
+	      AND DATE_FORMAT(a.workday, '%Y-%m') = #{month}
+	    </if>
+	  </where>
+	  GROUP BY a.employee_id, DATE_FORMAT(a.workday, '%Y-%m')
+	  ORDER BY a.employee_id, DATE_FORMAT(a.workday, '%Y-%m')
 	</select>
+
+
 </mapper>

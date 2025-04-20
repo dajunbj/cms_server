@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,24 +30,14 @@ public class AttendanceController extends BaseController {
     AttendanceService service;
 
     //----------一覧画面----------
-    @GetMapping("/listview/search")
+    @PostMapping("/listview/search")
     public ResponseEntity<?> getAttendanceList(
-            @RequestParam String month,
-            @RequestParam String employeeName, HttpSession session) {
+    		@RequestBody Map<String, Object> input, HttpSession session) {
     	
     	//セッションからログイン情報を取得する
     	Employees loginInfo = getLoginInfo(session, "userinfo", Employees.class);
-    	
-    	Map<String, Object> conditions = new HashMap<String, Object>();
-    	conditions.put("employee_id", loginInfo.getEmployee_id());
-    	
-//    	if(StringUtils.isNotEmpty(month)) {
-//        	conditions.put("month", month);
-//    	}
-//    	if(StringUtils.isNotEmpty(employeeName)) {
-//    		conditions.put("employeeName", employeeName);
-//    	}
-    	List<Attendance> result = service.searchAllData(conditions);
+
+    	List<Attendance> result = service.getMonthlyData(input);
     	
         return result.isEmpty()
                 ? ResultUtils.error("検索結果がありません")
@@ -63,6 +54,27 @@ public class AttendanceController extends BaseController {
     
     
     //----------登録画面----------
+    @GetMapping("/checkRegistered")
+    public Map<String, Object> checkAlreadyRegistered(
+            @RequestParam String month,
+            HttpSession session) {
+
+        Employees loginUser = getLoginInfo(session, "userinfo", Employees.class);
+        if (loginUser == null) {
+            return Map.of("exists", false); // fallback
+        }
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("employee_id", loginUser.getEmployee_id());
+        param.put("month", month);
+
+        List<Attendance> existing = service.getMonthlyData(param);
+        boolean exists = existing != null && !existing.isEmpty();
+
+        return Map.of("exists", exists);
+    }
+
+    
 	  @PostMapping("/registerview/registInit")
 	  public ResponseEntity<?> registerAttendanceInit( HttpSession session) {
 	      AttendanceForm form = new AttendanceForm();
