@@ -108,25 +108,37 @@ public class AttendanceServiceImpl implements AttendanceService {
 	 * @param conditions 処理条件
 	 * @return 勤務データ
 	 */
+	/**
+	 * 勤務データ作成
+	 *
+	 * @param conditions 処理条件
+	 * @return 勤務データ
+	 */
 	private List<Attendance> generateData(Map<String, Object> conditions) {
 	    Integer employeeId = (Integer) conditions.get("employee_id");
-	    String month = (String) conditions.get("month"); // "2025-05"
+	    String month = (String) conditions.get("month"); // 例: "2025-05"
 
 	    List<Attendance> generated = new ArrayList<>();
 	    DateTimeFormatter ymFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
 
-	    // ✔ 正确方式：先解析为 YearMonth
 	    YearMonth yearMonth = YearMonth.parse(month, ymFormatter);
 	    int lengthOfMonth = yearMonth.lengthOfMonth();
 
-	    // 生成当月每一天的考勤
 	    for (int i = 1; i <= lengthOfMonth; i++) {
 	        LocalDate current = yearMonth.atDay(i);
 	        Attendance att = new Attendance();
 	        att.setEmployee_id(employeeId);
 	        att.setWorkday(current.toString()); // yyyy-MM-dd
-	        att.setAttendance_type(isWeekend(current) ? "休日" : "平日");
-	        att.setBreak_hours(1.0); 
+
+	        if (isWeekend(current)) {
+	            att.setAttendance_type("休日");
+	        } else {
+	            att.setAttendance_type("平日");
+	            att.setStart_time("09:00");
+	            att.setEnd_time("18:00");
+	        }
+
+	        att.setBreak_hours(1.0);
 	        att.setIs_modified(false);
 	        generated.add(att);
 	    }
