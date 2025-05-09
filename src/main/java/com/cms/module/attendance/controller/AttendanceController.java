@@ -104,11 +104,13 @@ public class AttendanceController extends BaseController {
 	      if (result != null && result.size() > 0) {
 	          //社員の勤怠情報がある場合
               form.setAttendanceList(result);
+              form.setEmployee_id(info.getCompany_id());
+              form.setEmployeeName(info.getName());
 	      } else {
 	    	  
 	      }
 	      
-	      return ResultUtils.success(result);
+	      return ResultUtils.success(form);
 	  }
     
 //    @PostMapping("/registerview/regist")
