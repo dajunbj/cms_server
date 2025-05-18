@@ -53,17 +53,17 @@
     <!-- 追加 -->
     <insert id="insert" parameterType="com.cms.module.employee.entity.Employees">
         INSERT INTO employees (
-            employee_id, name, work_years, specialty_skills, age, address, technic_description,
+            name, work_years, specialty_skills, age, address, technic_description,
             employee_type, company_id, bp_company_id, department_id, hire_date, resignation_date,
-            gender, date_of_birth, phone_number, email, position, salary, bonus, contract_type,
+            sex, date_of_birth, phone_number, email, position, salary, bonus, contract_type,
             emergency_contact, emergency_phone, bank_account_name, bank_account_number,
             bank_name, branch_name, employment_status, work_permit_expiry, nationality,
             residence_card_number, residence_status, residence_expiry_date_from, residence_expiry_date_end,
             login_id, pwd, role_id, my_number
         ) VALUES (
-            #{employee_id}, #{name}, #{work_years}, #{specialty_skills}, #{age}, #{address}, #{technic_description},
+            #{name}, #{work_years}, #{specialty_skills}, #{age}, #{address}, #{technic_description},
             #{employee_type}, #{company_id}, #{bp_company_id}, #{department_id}, #{hire_date}, #{resignation_date},
-            #{gender}, #{date_of_birth}, #{phone_number}, #{email}, #{position}, #{salary}, #{bonus}, #{contract_type},
+            #{sex}, #{date_of_birth}, #{phone_number}, #{email}, #{position}, #{salary}, #{bonus}, #{contract_type},
             #{emergency_contact}, #{emergency_phone}, #{bank_account_name}, #{bank_account_number},
             #{bank_name}, #{branch_name}, #{employment_status}, #{work_permit_expiry}, #{nationality},
             #{residence_card_number}, #{residence_status}, #{residence_expiry_date_from}, #{residence_expiry_date_end},
