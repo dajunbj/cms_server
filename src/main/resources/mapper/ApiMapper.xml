@@ -31,7 +31,7 @@
         case_share as cs LEFT JOIN `case` as c ON cs.case_id = c.case_id
                          LEFT JOIN share_company as sc ON cs.share_company_id = sc.share_company_id 
                          LEFT JOIN company as com ON sc.affiliate_id = com.company_id
-                         LEFT JOIN employee as em ON c.employee_id = em.employee_id AND em.employee_type = '責任者'
+                         LEFT JOIN employees as em ON c.employee_id = em.employee_id AND em.employee_type = '責任者'
                          LEFT JOIN customer as cus ON c.customer_id = cus.customer_id
                          LEFT JOIN responsible as res ON c.responsible_id = res.responsible_id 
         <where>

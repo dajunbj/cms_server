@@ -34,7 +34,7 @@
         cus.updated_at
         FROM
         customer as cus LEFT JOIN responsible as res on cus.customer_id = res.customer_id
-                        LEFT JOIN employee as e on res.employee_id = e.employee_id
+                        LEFT JOIN employees as e on res.employee_id = e.employee_id
         <where>
         cus.deleteFlag = false
         <if test="customer_name != null  and customer_name.trim() != ''">
@@ -71,7 +71,7 @@
         FROM
         responsible as res LEFT JOIN customer as cus on res.customer_id = cus.customer_id
                         LEFT JOIN customer_department as de on res.department_id = de.department_id
-                        LEFT JOIN employee as e on res.employee_id = e.employee_id
+                        LEFT JOIN employees as e on res.employee_id = e.employee_id
         <where>
         res.deleteFlag = false
         <if test="responsible_name != null  and responsible_name.trim() != ''">

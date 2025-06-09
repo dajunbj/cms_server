@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.cms.module.contract.entity.ContractBean;
 import com.cms.module.contract.form.ContractForm;
-import com.cms.module.employee.entity.Employee;
+import com.cms.module.employee.entity.Employees;
 
 /**
  * 共通サービス層の基底抽象クラス。
@@ -28,7 +28,7 @@ public interface ContractService {
      */
     public void saveContract(ContractBean input);
     
-    Employee findById(String id);
+    Employees findById(String id);
     
     
     /**
@@ -36,7 +36,7 @@ public interface ContractService {
      *   @param conditions 检索条件
      *   @return 能否登录+身份
      */
-    public void loginSearch(Employee employee);
+    public void loginSearch(Employees employee);
     
     //提前结束
     public void finishManual(ContractForm contract);

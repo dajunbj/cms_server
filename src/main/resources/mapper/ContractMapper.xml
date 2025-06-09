@@ -37,7 +37,7 @@
         con.update_time,
         res.responsible_name
         FROM
-        contracts as con LEFT JOIN employee as e on con.employee_id = e.employee_id
+        contracts as con LEFT JOIN employees as e on con.employee_id = e.employee_id
                         LEFT JOIN customer as cus on con.custom_id = cus.customer_id 
                         LEFT JOIN responsible as res on con.responsible_id = res.responsible_id
         <where>
@@ -75,7 +75,7 @@
 	    </if>
 	</insert>
 	
-<select id="findById" resultType="com.cms.module.employee.entity.Employee">
+<select id="findById" resultType="com.cms.module.employee.entity.Employees">
     SELECT * FROM cms_employee WHERE employeeId = #{employeeId}
 </select>
 
@@ -87,7 +87,7 @@
            cus.customer_phone,
            res.responsible_name,
            res.responsible_phone
-    FROM contracts as c LEFT JOIN employee as e on c.employee_id = e.employee_id
+    FROM contracts as c LEFT JOIN employees as e on c.employee_id = e.employee_id
                         LEFT JOIN customer as cus on c.custom_id = cus.customer_id
                         LEFT JOIN responsible as res on c.responsible_id = res.responsible_id 
     WHERE contract_id = #{contract_id}
@@ -124,7 +124,7 @@
 	        name,
 	        employee_id
 	        FROM
-	        employee
+	        employees
 	        <where>
 	        <if test="name != null and name.trim() != ''">
 	        name = #{name}

@@ -13,7 +13,6 @@ import com.cms.module.customer.entity.ResponsibleBean;
 import com.cms.module.customer.form.CustomerForm;
 import com.cms.module.customer.form.ResponsibleForm;
 import com.cms.module.customer.mapper.CustomerMapper;
-import com.cms.module.employee.entity.Employee;
 
 /**
  * Employee のサービスクラス
@@ -177,9 +176,6 @@ public class CustomerServiceImpl implements CustomerService {
         return mapper.updateResponsible(input) > 0;
     }
 
-	public void loginSearch(Employee employee) {
-		
-	}
 }
 
 

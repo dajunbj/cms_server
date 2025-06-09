@@ -26,7 +26,7 @@
 	        name,
 	        employee_id
 	        FROM
-	        employee
+	        employees
 	        <where>
 	        <if test="name != null and name.trim() != ''">
 	        name = #{name}

@@ -13,7 +13,7 @@ import com.cms.module.contract.entity.CaseBean;
 import com.cms.module.contract.entity.ContractBean;
 import com.cms.module.contract.form.ContractForm;
 import com.cms.module.contract.mapper.ContractMapper;
-import com.cms.module.employee.entity.Employee;
+import com.cms.module.employee.entity.Employees;
 
 /**
  * Employee のサービスクラス
@@ -49,12 +49,12 @@ public class ContractServiceImpl implements ContractService {
      * @return 员工详情
      */
     @Override
-    public Employee findById(String id) {
+    public Employees findById(String id) {
         return mapper.findById(id);
     }
 
 
-	public void loginSearch(Employee employee) {
+	public void loginSearch(Employees employee) {
 		
 	}
     

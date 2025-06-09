@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import com.cms.module.contract.entity.CaseBean;
 import com.cms.module.contract.entity.ContractBean;
 import com.cms.module.contract.form.ContractForm;
-import com.cms.module.employee.entity.Employee;
+import com.cms.module.employee.entity.Employees;
 
 /**
  * ユーザー情報 Mapper
@@ -38,7 +38,7 @@ public interface ContractMapper {
 	 /**
      * 插入员工信息
      * 
-     * @param employee 员工实体
+     * @param ContractBean 员工实体
      * @return 影响的行数
      */
     int insertContract(ContractBean input);
@@ -49,7 +49,7 @@ public interface ContractMapper {
      * @param employeeId 员工ID
      * @return 员工信息
      */
-    Employee findById(@Param("employeeId") String employeeId);
+    Employees findById(@Param("employeeId") String employeeId);
 
     
 	 /**
@@ -127,7 +127,6 @@ public interface ContractMapper {
     int updateContract(ContractBean input);
     
     LocalDateTime getUpdateTime(int contract_id);
-//    int loginSearch(Employee employee);
 }
 
 

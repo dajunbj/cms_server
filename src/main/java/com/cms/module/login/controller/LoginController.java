@@ -1,8 +1,9 @@
-package com.cms.module.login;
+package com.cms.module.login.controller;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,13 +11,21 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.base.controller.BaseController;
 import com.cms.common.util.JwtUtil;
+import com.cms.module.employee.entity.Employees;
+import com.cms.module.login.service.LoginService;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 //@CrossOrigin(origins = "http://localhost:8081") // 允许从指定域访问
 @RequestMapping("/auth")
-public class LoginController {
+public class LoginController extends BaseController{
 
+	@Autowired
+	private LoginService service;
+	
     /**
      * ログインロジック
      * 
@@ -24,23 +33,34 @@ public class LoginController {
      * @return Token情報
      */
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> loginData) {
-    	
-        String username = loginData.get("username");
+    public Map<String, Object> login(@RequestBody Map<String, Object> loginData,HttpSession session) {
 
-        // 模拟用户认证（这里可以连接数据库验证）
-            String token = JwtUtil.generateToken(username);//Token作成
+    	Employees ct = service.getLoginInfo(loginData);
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("status","success");
+        Map<String, Object> response = new HashMap<>();
+        if (ct != null) {
+
+            //ログイン情報をセッションに保存
+            setLoginInfo(session, "userinfo", ct);
+            
+            //Token作成
+            String token = JwtUtil.generateToken((String)loginData.get("username"));
+        	response.put("success", true);
             response.put("token", token);
             response.put("expiresIn", 3600); // 单位：秒
-            response.put("right","営業組長");
-            response.put("role_id","0001");
-            response.put("id", 1);
-            //社員　営業員　営業組長　社長
-            return response;
-           
+        	response.put("message", "");
+        	
+        	//契約プランを設定する
+        	Map<String, String> companyMap = new HashMap<>();
+        	companyMap.put("plan_code", ct.getPlan_code());
+        	response.put("company", companyMap);
+        	
+        } else {
+        	response.put("success", false);
+        	response.put("message", "ユーザとパスワードが正しくないです。");
+        }
+        
+        return response;
     }
 
     /**
