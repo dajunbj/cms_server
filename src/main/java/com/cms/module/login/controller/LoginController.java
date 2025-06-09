@@ -49,6 +49,12 @@ public class LoginController extends BaseController{
             response.put("token", token);
             response.put("expiresIn", 3600); // 单位：秒
         	response.put("message", "");
+        	
+        	//契約プランを設定する
+        	Map<String, String> companyMap = new HashMap<>();
+        	companyMap.put("plan_code", ct.getPlan_code());
+        	response.put("company", companyMap);
+        	
         } else {
         	response.put("success", false);
         	response.put("message", "ユーザとパスワードが正しくないです。");

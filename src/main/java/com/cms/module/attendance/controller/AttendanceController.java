@@ -65,7 +65,7 @@ public class AttendanceController extends BaseController {
         }
 
         Map<String, Object> param = new HashMap<>();
-        param.put("employee_id", loginUser.getEmployee_id());
+//        param.put("employee_id", loginUser.getEmployee_id());
         param.put("month", month);
 
         List<Attendance> existing = service.getMonthlyData(param);
@@ -96,7 +96,7 @@ public class AttendanceController extends BaseController {
           month = now.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"));
 	      //引数検索
 	      Map<String,Object> param = new HashMap<String,Object>();
-	      param.put("employee_id", info.getEmployee_id());
+//	      param.put("employee_id", info.getEmployee_id());
 	      param.put("month", month);
 	      
 	      List<Attendance> result = service.getMonthDataByEmployeeId(param);
@@ -104,7 +104,7 @@ public class AttendanceController extends BaseController {
 	      if (result != null && result.size() > 0) {
 	          //社員の勤怠情報がある場合
               form.setAttendanceList(result);
-              form.setEmployee_id(info.getCompany_id());
+//              form.setEmployee_id(info.getCompany_id());
               form.setEmployeeName(info.getName());
 	      } else {
 	    	  

@@ -65,8 +65,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
 	public void registData(Employees obj) {
-		obj.setSex("男");
-		obj.setCompany_id(101);
+//		obj.setSex("男");
+//		obj.setCompany_id(101);
 		mapper.insert(obj);
 	}
 
