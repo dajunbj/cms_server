@@ -122,6 +122,13 @@
 		    <version>2.17.89</version>
 		</dependency>
 		
+		<!-- Google Cloud Vision API -->
+  		<dependency>
+    		<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-vision</artifactId>
+			<version>3.31.0</version> <!-- 可根据需要替换为最新版 -->
+  		</dependency>
+		
 	</dependencies>
 
 	<build>

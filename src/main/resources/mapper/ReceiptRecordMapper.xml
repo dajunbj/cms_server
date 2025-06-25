@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.module.ocr.mapper.ReceiptRecordMapper">
+
+  <!-- 領収書を挿入するSQL -->
+  <insert id="insert" parameterType="com.cms.module.ocr.entity.ReceiptRecord">
+    INSERT INTO receipt_record (issuer, date, amount, full_text, user_id, receipt_key)
+    VALUES (#{issuer}, #{date}, #{amount}, #{fullText}, #{userId}, #{receiptKey})
+  </insert>
+
+  <!-- receipt_keyで存在確認 -->
+  <select id="existsByReceiptKey" resultType="boolean" parameterType="string">
+    SELECT COUNT(*) > 0 FROM receipt_record WHERE receipt_key = #{receiptKey}
+  </select>
+
+</mapper>
