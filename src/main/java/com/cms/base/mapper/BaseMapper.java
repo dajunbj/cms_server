@@ -37,4 +37,9 @@ public interface BaseMapper<T, ID> {
      */
     void deleteByIds(@Param("ids") List<Integer> ids);
 
+    
+    /**
+     * 获取用户密码 
+     */
+    T getPwd(String user);
 }

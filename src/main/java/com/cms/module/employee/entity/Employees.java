@@ -35,6 +35,7 @@ public class Employees {
     private String login_id;
     private String pwd;
     private String plan_code;
+    private String auth_code;
 
     private LocalDate created_at;
     private LocalDate updated_at;
