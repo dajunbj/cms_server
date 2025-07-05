@@ -53,6 +53,7 @@ public class LoginController extends BaseController{
         	//契約プランを設定する
         	Map<String, String> companyMap = new HashMap<>();
         	companyMap.put("plan_code", ct.getPlan_code());
+        	companyMap.put("user_role", ct.getUser_role());
         	response.put("company", companyMap);
         	
         } else {
