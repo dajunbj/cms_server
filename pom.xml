@@ -129,6 +129,12 @@
 			<version>3.31.0</version> <!-- 可根据需要替换为最新版 -->
   		</dependency>
 		
+		<dependency>
+  			<groupId>org.springframework.boot</groupId>
+  			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		
+		
 	</dependencies>
 
 	<build>
