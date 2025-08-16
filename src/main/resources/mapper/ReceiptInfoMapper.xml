@@ -1,79 +1,107 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  ReceiptInfoMapper.xml
+  用途：領収書情報テーブル（receipt_info）の基本操作を定義する
+
+  主な機能：
+    - 新規登録
+    - 条件付き一覧検索（ページング対応）
+    - 件数カウント
+    - 申請ステータス更新（草稿/確認済 → 申請済）
+    - 申請不可件数のチェック
+-->
 <mapper namespace="com.cms.module.ocr.mapper.ReceiptInfoMapper">
 
-	<insert id="insert"
-		parameterType="com.cms.module.ocr.entity.ReceiptInfo">
-		INSERT INTO receipt_info (
-		image_path, store_name,
-		issue_date, amount, full_text, user_id, status,
-		created_at
-		) VALUES (
-		#{imagePath}, #{storeName}, #{issueDate}, #{amount}, #{fullText},
-		#{userId}, #{status}, #{createdAt}
-		)
-	</insert>
+  <!--
+    領収書情報を新規登録
+    - 主キーはDB側のAUTO_INCREMENT
+  -->
+  <insert id="insert" parameterType="com.cms.module.ocr.entity.ReceiptInfo">
+    INSERT INTO receipt_info (
+      image_path, store_name,
+      issue_date, amount, full_text, user_id, status,
+      created_at
+    ) VALUES (
+      #{imagePath}, #{storeName}, #{issueDate}, #{amount}, #{fullText},
+      #{userId}, #{status}, #{createdAt}
+    )
+  </insert>
 
-	<select id="queryByCondition"
-		resultType="com.cms.module.ocr.dto.ReceiptInfoListItem">
-		SELECT
-		id,
-		image_path AS imagePath,
-		store_name AS storeName,
-		issue_date AS
-		issueDate,   <!-- 不要 DATE_FORMAT -->
-		amount AS amount,      <!-- 不要 FORMAT -->
-		status,
-		created_at AS createdAt
-		FROM receipt_info
-		<where>
-			<if test="cond.storeName != null and cond.storeName != ''">
-				AND store_name LIKE CONCAT('%', #{cond.storeName}, '%')
-			</if>
-			<if test="cond.status != null and cond.status != ''">
-				AND status = #{cond.status}
-			</if>
-		</where>
-		ORDER BY created_at DESC
-		LIMIT #{cond.limit} OFFSET #{cond.offset}
-	</select>
+  <!--
+    領収書一覧を条件付きで検索（ページング）
+    - storeName：LIKE検索
+    - status   ：完全一致
+    - issueDate/amount はそのまま取得（FORMATしない）
+  -->
+  <select id="queryByCondition"
+          resultType="com.cms.module.ocr.dto.ReceiptInfoListItem">
+    SELECT
+      id,
+      image_path AS imagePath,
+      store_name AS storeName,
+      issue_date AS issueDate,
+      amount     AS amount,
+      status,
+      created_at AS createdAt
+    FROM receipt_info
+    <where>
+      <if test="cond.storeName != null and cond.storeName != ''">
+        AND store_name LIKE CONCAT('%', #{cond.storeName}, '%')
+      </if>
+      <if test="cond.status != null and cond.status != ''">
+        AND status = #{cond.status}
+      </if>
+    </where>
+    ORDER BY created_at DESC
+    LIMIT #{cond.limit} OFFSET #{cond.offset}
+  </select>
 
+  <!--
+    検索条件に一致する件数を取得
+    - ページング用のtotal件数
+  -->
+  <select id="countByCondition" resultType="int">
+    SELECT COUNT(*)
+    FROM receipt_info
+    <where>
+      <if test="cond.storeName != null and cond.storeName != ''">
+        AND store_name LIKE CONCAT('%', #{cond.storeName}, '%')
+      </if>
+      <if test="cond.status != null and cond.status != ''">
+        AND status = #{cond.status}
+      </if>
+    </where>
+  </select>
 
-	<select id="countByCondition" resultType="int">
-		SELECT COUNT(*)
-		FROM receipt_info
-		<where>
-			<if test="cond.storeName != null and cond.storeName != ''">
-				AND store_name LIKE CONCAT('%', #{cond.storeName}, '%')
-			</if>
-			<if test="cond.status != null and cond.status != ''">
-				AND status = #{cond.status}
-			</if>
-		</where>
-	</select>
+  <!--
+    複数の領収書ステータスを一括更新 → 「申請済」
+    - 対象：現在「草稿」「確認済」のみ
+  -->
+  <update id="updateStatusAppliedBatch">
+    UPDATE receipt_info
+    SET status = '申請済'
+    WHERE id IN
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+    AND status IN ('草稿','確認済')
+  </update>
 
-	<update id="updateStatusAppliedBatch">
-		UPDATE receipt_info
-		SET status = '申請済'
-		WHERE id IN
-		<foreach collection="ids" item="id" open="(" separator=","
-			close=")">
-			#{id}
-		</foreach>
-		AND status IN ('草稿','確認済')
-	</update>
-
-	<select id="countNotApplyable" resultType="int">
-		SELECT COUNT(*)
-		FROM receipt_info
-		WHERE id IN
-		<foreach collection="ids" item="id" open="(" separator=","
-			close=")">
-			#{id}
-		</foreach>
-		AND status NOT IN ('草稿','確認済')
-	</select>
-
+  <!--
+    指定されたIDのうち、申請不可能な件数をカウント
+    - 対象外ステータス：草稿・確認済 以外
+  -->
+  <select id="countNotApplyable" resultType="int">
+    SELECT COUNT(*)
+    FROM receipt_info
+    WHERE id IN
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+    AND status NOT IN ('草稿','確認済')
+  </select>
 
 </mapper>

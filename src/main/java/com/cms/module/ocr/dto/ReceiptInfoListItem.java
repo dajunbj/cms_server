@@ -1,75 +1,97 @@
 package com.cms.module.ocr.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * 領収書情報リスト用 DTO
+ * 
+ * 承認画面や申請詳細画面で一覧表示するための軽量オブジェクト。
+ * DBの ReceiptInfo エンティティの一部項目を抜粋して保持する。
+ *
+ * 使用例:
+ * - 経費申請の詳細画面で「添付領収書リスト」を表示する
+ * - 一覧画面の領収書参照
+ */
 public class ReceiptInfoListItem {
-	private Long id;
-	private String imagePath;
-	private String storeName;
-	private LocalDate issueDate;
-	private BigDecimal amount;
-	private String status;
 
-	public Long getId() {
-		return id;
-	}
+    /** 領収書ID（主キー） */
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /** 領収書画像の保存パス（相対 or 絶対パス） */
+    private String imagePath;
 
-	public String getImagePath() {
-		return imagePath;
-	}
+    /** 店舗名（OCR抽出／手入力） */
+    private String storeName;
 
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
-	}
+    /** 発行日（yyyy-MM-dd） */
+    private LocalDate issueDate;
 
-	public String getStoreName() {
-		return storeName;
-	}
+    /** 金額（円単位の整数。DBはBIGINT、JavaはLongで保持） */
+    private Long amount;
 
-	public void setStoreName(String storeName) {
-		this.storeName = storeName;
-	}
+    /** ステータス（例: "草稿", "確認済", "申請済", "承認済", "差戻し"） */
+    private String status;
 
-	public LocalDate getIssueDate() {
-		return issueDate;
-	}
+    /** 登録日時（システムに保存された時刻） */
+    private LocalDateTime createdAt;
 
-	public void setIssueDate(LocalDate issueDate) {
-		this.issueDate = issueDate;
-	}
 
-	public BigDecimal getAmount() {
-		return amount;
-	}
+    // ================== Getter / Setter ==================
 
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public String getImagePath() {
+        return imagePath;
+    }
 
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
+    public String getStoreName() {
+        return storeName;
+    }
 
-	private LocalDateTime createdAt;
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
 
-	// Getter / Setter
+    public LocalDate getIssueDate() {
+        return issueDate;
+    }
 
+    public void setIssueDate(LocalDate issueDate) {
+        this.issueDate = issueDate;
+    }
+
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
