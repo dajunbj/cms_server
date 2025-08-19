@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.module.salarynew.mapper.SalaryDetailMapper">
+
+  <sql id="BaseColumns">
+    id, company_id AS companyId, company_name AS companyName,
+    department_id AS departmentId, department_name AS departmentName,
+    employee_id AS employeeId, employee_code AS employeeCode,
+    employee_name AS employeeName,
+    DATE_FORMAT(salary_month, '%Y-%m-01') AS salaryMonth,
+    total_payment AS totalPayment, total_deduction AS totalDeduction, net_payment AS netPayment
+  </sql>
+
+  <sql id="WhereClause">
+    <where>
+      <if test="companyId != null">
+        AND company_id = #{companyId}
+      </if>
+      <if test="departmentId != null">
+        AND department_id = #{departmentId}
+      </if>
+      <if test="employeeId != null">
+        AND employee_id = #{employeeId}
+      </if>
+      <if test="salaryMonth != null">
+        AND salary_month = #{salaryMonth}
+      </if>
+    </where>
+  </sql>
+
+  <!-- 统计总数 -->
+  <select id="countList" resultType="long">
+    SELECT COUNT(1)
+    FROM salary_detail
+    <include refid="WhereClause"/>
+  </select>
+
+  <!-- 列表查询（分页 + 排序） -->
+  <select id="selectList" resultType="com.cms.module.salarynew.dto.SalaryListItemDTO">
+    SELECT
+      <include refid="BaseColumns"/>
+    FROM salary_detail
+    <include refid="WhereClause"/>
+
+    <!-- orderBy 为服务端白名单拼好的字符串 -->
+    <if test="orderBy != null and orderBy != ''">
+      ORDER BY ${orderBy}
+    </if>
+
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+  <!-- 下拉选项 -->
+  <select id="distinctCompanies" resultType="map">
+    SELECT DISTINCT company_id AS id, company_name AS name
+    FROM salary_detail
+    WHERE company_id IS NOT NULL
+    ORDER BY company_name
+  </select>
+
+  <select id="distinctDepartments" resultType="map">
+    SELECT DISTINCT department_id AS id, department_name AS name
+    FROM salary_detail
+    WHERE department_id IS NOT NULL
+    ORDER BY department_name
+  </select>
+
+  <select id="distinctEmployees" resultType="map">
+    SELECT DISTINCT employee_id AS id, employee_name AS name
+    FROM salary_detail
+    WHERE employee_id IS NOT NULL
+    ORDER BY employee_name
+  </select>
+
+</mapper>
