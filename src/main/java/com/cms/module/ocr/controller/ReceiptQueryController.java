@@ -31,7 +31,7 @@ public class ReceiptQueryController {
      *
      * @param page      ページ番号（1開始）。デフォルト: 1
      * @param size      1ページの件数。デフォルト: 10
-     * @param storeName 店名検索条件（部分一致対応想定）
+     * @param Issuer 店名検索条件（部分一致対応想定）
      * @param status    ステータス検索条件（例: 未申請, 申請中, 承認済）
      * @return JSON { items: [...], total: 件数, page: ページ番号, size: 件数 }
      */
@@ -39,7 +39,7 @@ public class ReceiptQueryController {
     public ResponseEntity<Map<String, Object>> getReceiptList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String storeName,
+            @RequestParam(required = false) String Issuer,
             @RequestParam(required = false) String status
     ) {
         try {
@@ -51,7 +51,7 @@ public class ReceiptQueryController {
             ReceiptQueryCondition cond = new ReceiptQueryCondition();
             cond.setOffset((page - 1) * size);
             cond.setLimit(size);
-            cond.setStoreName(storeName);
+            cond.setIssuer(Issuer);
             cond.setStatus(status);
 
             // データ取得

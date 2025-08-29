@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  *
  * 主なフィールド:
  *   - imagePath: 領収書画像ファイルの保存パス
- *   - storeName: 発行元（店名など）
+ *   - Issuer: 発行元（店名など）
  *   - issueDate: 発行日
  *   - amount   : 金額（JPY整数, BIGINTで保持）
  *   - fullText : OCR全文
@@ -28,7 +28,7 @@ public class ReceiptInfo {
     private String imagePath;
 
     /** 発行元（店名、会社名など） */
-    private String storeName;
+    private String Issuer;
 
     /** 発行日 */
     private LocalDate issueDate;
@@ -56,8 +56,8 @@ public class ReceiptInfo {
     public String getImagePath() { return imagePath; }
     public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
-    public String getStoreName() { return storeName; }
-    public void setStoreName(String storeName) { this.storeName = storeName; }
+    public String getIssuer() { return Issuer; }
+    public void setIssuer(String Issuer) { this.Issuer = Issuer; }
 
     public LocalDate getIssueDate() { return issueDate; }
     public void setIssueDate(LocalDate issueDate) { this.issueDate = issueDate; }

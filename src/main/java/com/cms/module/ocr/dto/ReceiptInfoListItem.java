@@ -21,8 +21,8 @@ public class ReceiptInfoListItem {
     /** 領収書画像の保存パス（相対 or 絶対パス） */
     private String imagePath;
 
-    /** 店舗名（OCR抽出／手入力） */
-    private String storeName;
+    /** 発行先（OCR抽出／手入力） */
+    private String issuer;
 
     /** 発行日（yyyy-MM-dd） */
     private LocalDate issueDate;
@@ -55,12 +55,12 @@ public class ReceiptInfoListItem {
         this.imagePath = imagePath;
     }
 
-    public String getStoreName() {
-        return storeName;
+    public String getIssuer() {
+        return issuer;
     }
 
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
     }
 
     public LocalDate getIssueDate() {

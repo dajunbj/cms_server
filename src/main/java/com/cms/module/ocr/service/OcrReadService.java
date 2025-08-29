@@ -1,223 +1,133 @@
 package com.cms.module.ocr.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cms.module.ocr.entity.ReceiptInfo;
-import com.cms.module.ocr.mapper.ReceiptInfoMapper;
-import com.google.api.gax.core.FixedCredentialsProvider;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.vision.v1.AnnotateImageRequest;
-import com.google.cloud.vision.v1.AnnotateImageResponse;
-import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
-import com.google.cloud.vision.v1.Feature;
-import com.google.cloud.vision.v1.Image;
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
-import com.google.cloud.vision.v1.ImageAnnotatorSettings;
-import com.google.cloud.vision.v1.ImageContext;
-import com.google.protobuf.ByteString;
-
 /**
- * OCR読取処理サービス
+ * ================================================================
+ * OCR 読み取り・保存・更新・削除・エクスポート サービス（インターフェース）
  *
- * 機能概要:
- * - Google Vision API を利用したOCR解析
- * - OCR結果から発行元・発行日・金額を抽出
- * - 領収書画像とOCR結果をローカル保存 + DB登録
+ * フロント要件に対応した機能を提供する。
+ *  - OCR 読み取り（単体／バッチの単体処理に相当）
+ *  - 保存（新規：画像＋項目／バッチ：配列）
+ *  - 更新（項目のみ、画像は再送不要）
+ *  - 削除（保存取消）
+ *  - Excel 出力（ユーザー別）
+ *
+ * 例外方針：
+ *  - ハードエラー（I/O、外部API 失敗など）は Exception をスロー
+ *  - 呼び出し側（コントローラ）が HTTP ステータスを適切に返却
+ * ================================================================
  */
-@Service
-public class OcrReadService {
+public interface OcrReadService {
 
-    @Autowired
-    private ReceiptInfoMapper receiptInfoMapper;
-
-    /**
-     * OCR解析（Google Vision API）
-     *
-     * 手順:
-     * 1. 環境変数 GOOGLE_OCR_KEY_PATH から認証キーを読み込む
-     * 2. Google Vision API へ画像を送信
-     * 3. OCR結果から発行元・発行日・金額を抽出
-     *
-     * @param file アップロードされた領収書画像
-     * @return OCR結果（発行元、日付、金額、全文）
-     * @throws Exception API呼び出し失敗など
-     */
-    public Map<String, Object> parse(MultipartFile file) throws Exception {
-        String keyPath = System.getenv("GOOGLE_OCR_KEY_PATH");
-        if (keyPath == null || keyPath.isEmpty()) {
-            throw new IllegalStateException("Environment variable GOOGLE_OCR_KEY_PATH not set.");
-        }
-
-        GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(keyPath));
-        ImageAnnotatorSettings settings = ImageAnnotatorSettings.newBuilder()
-                .setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
-
-        ByteString imgBytes = ByteString.readFrom(file.getInputStream());
-        Image img = Image.newBuilder().setContent(imgBytes).build();
-        Feature feat = Feature.newBuilder().setType(Feature.Type.DOCUMENT_TEXT_DETECTION).build();
-        ImageContext context = ImageContext.newBuilder().addLanguageHints("ja").build();
-
-        AnnotateImageRequest request = AnnotateImageRequest.newBuilder()
-                .addFeatures(feat).setImage(img).setImageContext(context).build();
-
-        try (ImageAnnotatorClient client = ImageAnnotatorClient.create(settings)) {
-            BatchAnnotateImagesResponse response = client.batchAnnotateImages(List.of(request));
-            AnnotateImageResponse res = response.getResponses(0);
-
-            if (res.hasError()) {
-                throw new RuntimeException("OCR Error: " + res.getError().getMessage());
-            }
-
-            // OCR全文
-            String fullText = res.getFullTextAnnotation().getText();
-
-            // 結果マップを作成
-            Map<String, Object> result = new HashMap<>();
-            result.put("issuer", extractIssuer(fullText));
-            result.put("date", extractDate(fullText));
-            result.put("amount", extractAmount(fullText));
-            result.put("full_text", fullText);
-
-            return result;
-        }
-    }
+    // ------------------------------------------------------------
+    // 1) OCR 読み取り
+    // ------------------------------------------------------------
 
     /**
-     * OCR結果と画像をDBに保存（receipt_info テーブル）
+     * 画像1枚を OCR 解析する。
      *
-     * 保存内容:
-     * - 発行元（issuer）
-     * - 発行日（date）
-     * - 金額（amount）
-     * - OCR全文（full_text）
-     * - 画像相対パス（/uploads/年/月/ファイル名）
-     * - ユーザーID
-     * - ステータス（初期値: 確認済）
+     * 戻り Map の想定キー（フロント側と合意）：
+     *   - issuer     : String 発行先（会社名／店舗名等）
+     *   - number     : String 登録番号（任意、例：T＋13桁）
+     *   - date       : String 発行日（yyyy-MM-dd に正規化した文字列推奨）
+     *   - amount     : String 金額（例：3,740 等の表示用文字列）
+     *   - full_text  : String OCR全文
      *
-     * @param data   OCR結果
-     * @param file   領収書画像
-     * @param userId ユーザーID
-     * @throws IOException 画像保存失敗など
+     * @param file OCR 対象画像
+     * @return 解析結果のキー値マップ
+     * @throws Exception OCR基盤エラー等
      */
-    public void saveToDatabaseWithImage(
-            Map<String, Object> data, MultipartFile file, String userId)
-            throws IOException {
+    Map<String, Object> parse(MultipartFile file) throws Exception;
 
-        ReceiptInfo info = new ReceiptInfo();
+    // ------------------------------------------------------------
+    // 2) 保存（新規／バッチ）
+    // ------------------------------------------------------------
 
-        // 日付別ディレクトリ作成 (年/月)
-        LocalDate baseDate = parseDate((String) data.get("date"));
-        if (baseDate == null) baseDate = LocalDate.now();
-        String y = String.valueOf(baseDate.getYear());
-        String m = String.format("%02d", baseDate.getMonthValue());
+    /**
+     * 1件を新規保存する（画像＋項目）。
+     *
+     * 保存後の状態は「確認済」を基本とし、DB の自動採番 ID を返す。
+     *
+     * @param issuer    発行先
+     * @param number    登録番号（任意）
+     * @param date      発行日（文字列）
+     * @param amount    金額（文字列）
+     * @param fullText  OCR全文（任意）
+     * @param file      画像ファイル
+     * @param userId    登録ユーザーID（文字列）
+     * @return 生成されたレコードID
+     * @throws Exception 画像保存／DB書込失敗 等
+     */
+    Long saveOne(String issuer, String number, String date, String amount,
+                 String fullText, MultipartFile file, String userId) throws Exception;
 
-        // 物理保存先: C:\Users\...\ocr_image_save\年\月\
-        File dir = new File("C:\\Users\\Micheal\\Desktop\\ocr_image_save", y + File.separator + m);
-        if (!dir.exists()) dir.mkdirs();
+    /**
+     * 複数件を一括保存する（配列で同順位対応）。
+     * 保存失敗した要素には null を設定して返す（フロントが index で突合）。
+     *
+     * @param files     画像群
+     * @param issuer    各行の発行先
+     * @param number    各行の登録番号（任意）
+     * @param date      各行の発行日（文字列）
+     * @param amount    各行の金額（文字列）
+     * @param fullText  各行のOCR全文（任意）
+     * @param userId    ユーザーID（文字列）
+     * @return 各行に対応した保存ID（失敗は null）
+     * @throws Exception 途中失敗時も処理を継続し得るが、致命時は例外
+     */
+    List<Long> saveBatch(List<MultipartFile> files, List<String> issuer, List<String> number,
+                         List<String> date, List<String> amount, List<String> fullText,
+                         String userId) throws Exception;
 
-        // ファイル名: タイムスタンプ + 元ファイル名
-        String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        File dest = new File(dir, filename);
-        file.transferTo(dest);
+    // ------------------------------------------------------------
+    // 3) 更新（項目のみ）
+    // ------------------------------------------------------------
 
-        // 相対パス（DB保存用）
-        String relativeUrl = "/uploads/" + y + "/" + m + "/" + filename;
-        info.setImagePath(relativeUrl);
+    /**
+     * 既存1件を更新する（画像は再送不要、項目のみ上書き）。
+     * 業務条件により、更新対象の所有者チェック等は実装側で行う。
+     *
+     * @param id      更新対象ID
+     * @param issuer  発行先
+     * @param number  登録番号（任意）
+     * @param date    発行日（文字列）
+     * @param amount  金額（文字列）
+     * @param userId  操作ユーザーID（文字列）
+     * @return 更新件数（通常 1）
+     * @throws Exception 入力値不正／権限／DB 例外 等
+     */
+    int updateOne(Long id, String issuer, String number, String date, String amount, String userId) throws Exception;
 
-        // OCRフィールド設定
-        info.setStoreName((String) data.get("issuer"));
-        info.setIssueDate(parseDate((String) data.get("date")));
-        info.setAmount(parseAmount((String) data.get("amount")));
-        info.setFullText((String) data.get("full_text"));
-        info.setUserId(Long.parseLong(userId));
-        info.setStatus("確認済");
-        info.setCreatedAt(java.time.LocalDateTime.now());
+    // ------------------------------------------------------------
+    // 4) 削除（保存取消）
+    // ------------------------------------------------------------
 
-        // デバッグ出力
-        System.out.println("storeName = " + data.get("issuer"));
-        System.out.println("date      = " + data.get("date"));
-        System.out.println("amount    = " + data.get("amount"));
-        System.out.println("fullText  = " + data.get("full_text"));
+    /**
+     * 既存1件を削除する（保存取消。画像ファイルの扱いは実装側で方針決定）。
+     * 実装例：論理削除／物理削除／画像ファイルの削除可否 等。
+     *
+     * @param id     削除対象ID
+     * @param userId 操作ユーザーID（文字列）
+     * @return 削除件数（通常 1／存在なしは 0）
+     * @throws Exception 権限／DB 例外 等
+     */
+    int deleteOne(Long id, String userId) throws Exception;
 
-        // DB保存
-        receiptInfoMapper.insert(info);
-    }
+    // ------------------------------------------------------------
+    // 5) エクスポート
+    // ------------------------------------------------------------
 
-    // ================== OCR 抽出処理 ==================
-
-    /** 発行元抽出 */
-    private String extractIssuer(String text) {
-        String[] lines = text.split("\n");
-        for (String line : lines) {
-            if (line.matches(".*(株式会社|有限会社|商店|店|センター|クリニック).*")) {
-                return line.trim();
-            }
-        }
-        return lines.length > 0 ? lines[0].trim() : "";
-    }
-
-    /** 日付抽出 */
-    private String extractDate(String text) {
-        String[] patterns = {
-                "\\d{4}年\\d{1,2}月\\d{1,2}日",
-                "\\d{4}/\\d{1,2}/\\d{1,2}",
-                "\\d{4}-\\d{1,2}-\\d{1,2}",
-                "\\d{1,2}/\\d{1,2}"
-        };
-        for (String pattern : patterns) {
-            Matcher m = Pattern.compile(pattern).matcher(text);
-            if (m.find()) return m.group();
-        }
-        return null;
-    }
-
-    /** 文字列→LocalDate */
-    private LocalDate parseDate(String raw) {
-        if (raw == null) return null;
-        String[] patterns = { "yyyy年M月d日", "yyyy/M/d", "yyyy-M-d", "M/d" };
-        for (String pattern : patterns) {
-            try {
-                return LocalDate.parse(raw, DateTimeFormatter.ofPattern(pattern));
-            } catch (Exception e) {
-                // continue
-            }
-        }
-        return null;
-    }
-
-    /** 金額抽出 */
-    private String extractAmount(String text) {
-        Pattern pattern = Pattern.compile("(合計|合算|税込|金額)[:：]?\\s*[¥￥]?\\s*\\d{1,3}(,\\d{3})*(\\.\\d{1,2})?");
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.find()) {
-            String match = matcher.group();
-            Matcher amountOnly = Pattern.compile("\\d{1,3}(,\\d{3})*(\\.\\d{1,2})?").matcher(match);
-            return amountOnly.find() ? amountOnly.group() : null;
-        }
-
-        // fallback: 単純な金額っぽい数字
-        Matcher fallback = Pattern.compile("[¥￥]?\\s*\\d{1,3}(,\\d{3})*(\\.\\d{1,2})?").matcher(text);
-        return fallback.find() ? fallback.group().trim() : null;
-    }
-
-    /** 金額文字列 → Long */
-    private Long parseAmount(String amountText) {
-        if (amountText == null) return null;
-        String clean = amountText.replaceAll("[^\\d]", ""); // 数字以外除去
-        if (clean.isEmpty()) return null;
-        return Long.valueOf(clean);
-    }
+    /**
+     * Excel（.xlsx）をバイト配列で返す。
+     * Content-Type：application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+     *
+     * @param userId 出力対象ユーザーID
+     * @return Excel バイト列
+     * @throws Exception 生成時の I/O 例外 等
+     */
+    byte[] exportExcel(String userId) throws Exception;
 }
