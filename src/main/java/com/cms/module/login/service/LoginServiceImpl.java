@@ -1,7 +1,5 @@
 package com.cms.module.login.service;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +17,8 @@ public class LoginServiceImpl implements LoginService {
 	LoginMapper mapper;
 	
 	@Override
-	public Employees getLoginInfo(Map<String, Object> conditions) {
+	public Employees getLoginInfo(String user) {
 
-        return mapper.selectOne(conditions);
+        return mapper.getPwd(user);
     }
 }

@@ -36,5 +36,19 @@
 	        </if>
         </where>
 	</select>
+	
+	<select id="getPwd"
+        parameterType="String"
+        resultType="com.cms.module.employee.entity.Employees">
+        SELECT
+        * 
+        FROM
+        employees
+        <where>
+	        <if test="user != null  and user.trim() != ''">
+	        	and login_id = #{user}
+	        </if>
+        </where>
+	</select>
 
 </mapper>

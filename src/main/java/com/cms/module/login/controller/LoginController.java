@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import com.cms.base.controller.BaseController;
 import com.cms.common.util.JwtUtil;
 import com.cms.module.employee.entity.Employees;
 import com.cms.module.login.service.LoginService;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -27,6 +29,16 @@ public class LoginController extends BaseController{
 	private LoginService service;
 	
     /**
+     * HASH
+     * 
+     * @param loginData 
+     * @return Token情報
+     */
+	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+	
+	
+    /**
      * ログインロジック
      * 
      * @param loginData 
@@ -34,31 +46,47 @@ public class LoginController extends BaseController{
      */
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, Object> loginData,HttpSession session) {
-
-    	Employees ct = service.getLoginInfo(loginData);
-
-        Map<String, Object> response = new HashMap<>();
-        if (ct != null) {
-
-            //ログイン情報をセッションに保存
-            setLoginInfo(session, "userinfo", ct);
-            
-            //Token作成
-            String token = JwtUtil.generateToken((String)loginData.get("username"));
-        	response.put("success", true);
-            response.put("token", token);
-            response.put("expiresIn", 3600); // 单位：秒
-        	response.put("message", "");
-        	
-        	//契約プランを設定する
-        	Map<String, String> companyMap = new HashMap<>();
-        	companyMap.put("plan_code", ct.getPlan_code());
-        	response.put("company", companyMap);
-        	
-        } else {
-        	response.put("success", false);
-        	response.put("message", "ユーザとパスワードが正しくないです。");
-        }
+        
+    	Map<String, Object> response = new HashMap<>();
+    	String user = (String) loginData.get("username");
+    	String password = (String) loginData.get("password");  
+    	Employees ct = service.getLoginInfo(user);
+    	String pwdHash = ct.getPassword_hash();  
+    	GoogleAuthenticator gAuth = new GoogleAuthenticator();
+    	boolean isValid = gAuth.authorize(ct.getAuth_code(), Integer.parseInt((String)loginData.get("authCode")));
+    	try {
+	    	if(isValid) {
+		        if (passwordEncoder.matches(password,pwdHash)) {
+		
+		            //ログイン情報をセッションに保存
+		            setLoginInfo(session, "userinfo", ct);
+		            
+		            //Token作成
+		            String token = JwtUtil.generateToken((String)loginData.get("username"));
+		        	response.put("success", true);
+		            response.put("token", token);
+		            response.put("expiresIn", 3600); // 单位：秒
+		        	response.put("message", "");
+		        	
+		        	//契約プランを設定する
+		        	Map<String, String> companyMap = new HashMap<>();
+		        	companyMap.put("plan_code", ct.getPlan_code());
+		        	companyMap.put("user_role", ct.getUser_role());
+		        	response.put("company", companyMap);
+		        	
+		        } else {
+		        	response.put("success", false);
+		        	response.put("message", "ユーザとパスワードが正しくないです。");
+		        }
+	        }
+	    	else {
+	        	response.put("success", false);
+	        	response.put("message", "一時認証コードが間違えています。");
+	    	}
+    	}
+    	catch(Exception e) {
+    		throw new RuntimeException("致命的なエラーが発生しました、管理者と連絡してください。");
+    	}
         
         return response;
     }

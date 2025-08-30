@@ -1,7 +1,5 @@
 package com.cms.module.login.service;
 
-import java.util.Map;
-
 import com.cms.module.employee.entity.Employees;
 
 /**
@@ -16,5 +14,5 @@ public interface LoginService {
      * @param conditions 検索条件
      * @return ログインユーザ
      */
-    public Employees getLoginInfo(Map<String, Object> conditions);
+    public Employees getLoginInfo(String user);
 }
