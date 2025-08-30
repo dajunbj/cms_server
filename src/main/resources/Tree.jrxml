@@ -1,0 +1,237 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="Tree" language="java" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2f6e4db4-9f8f-4ffe-9759-6e1fd142f492">
+	<property name="template.type" value="columnar"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="Title" forecolor="#000000" fontName="Times New Roman" fontSize="50.0" bold="false"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Times New Roman" fontSize="18.0" bold="false"/>
+	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14.0" bold="true"/>
+	<style name="Detail" mode="Transparent" fontName="Times New Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle mode="Opaque" backcolor="#F0EFEF">
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+		</conditionalStyle>
+	</style>
+	<query language="sql"><![CDATA[select * from  mysql_pg.employees]]></query>
+	<field name="employee_id" class="java.lang.Integer">
+		<description><![CDATA[ユーザーID（社員ID）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="employee_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="employee_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="company_id" class="java.lang.Integer">
+		<description><![CDATA[会社ID]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="company_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="company_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<description><![CDATA[氏名]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="email" class="java.lang.String">
+		<description><![CDATA[メールアドレス（ログイン通知など）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="email"/>
+		<property name="com.jaspersoft.studio.field.label" value="email"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="password_hash" class="java.lang.String">
+		<description><![CDATA[パスワードハッシュ]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="password_hash"/>
+		<property name="com.jaspersoft.studio.field.label" value="password_hash"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="role" class="java.lang.String">
+		<description><![CDATA[権限（ロール）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="role"/>
+		<property name="com.jaspersoft.studio.field.label" value="role"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="status" class="java.lang.String">
+		<description><![CDATA[ステータス（在職中／退職など）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="status"/>
+		<property name="com.jaspersoft.studio.field.label" value="status"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="created_at" class="java.time.LocalDateTime">
+		<description><![CDATA[作成日時]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="created_at"/>
+		<property name="com.jaspersoft.studio.field.label" value="created_at"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="updated_at" class="java.time.LocalDateTime">
+		<description><![CDATA[更新日時]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="updated_at"/>
+		<property name="com.jaspersoft.studio.field.label" value="updated_at"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="department_id" class="java.lang.Integer">
+		<description><![CDATA[部署ID]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="department_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="department_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="hire_date" class="java.sql.Date">
+		<description><![CDATA[入社日]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="hire_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="hire_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="resignation_date" class="java.sql.Date">
+		<description><![CDATA[退社日]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="resignation_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="resignation_date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="gender" class="java.lang.String">
+		<description><![CDATA[性別]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="gender"/>
+		<property name="com.jaspersoft.studio.field.label" value="gender"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="date_of_birth" class="java.sql.Date">
+		<description><![CDATA[生年月日]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="date_of_birth"/>
+		<property name="com.jaspersoft.studio.field.label" value="date_of_birth"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="phone_number" class="java.lang.String">
+		<description><![CDATA[電話番号]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="phone_number"/>
+		<property name="com.jaspersoft.studio.field.label" value="phone_number"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="bank_account_name" class="java.lang.String">
+		<description><![CDATA[銀行口座名義]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="bank_account_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="bank_account_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="bank_account_number" class="java.lang.String">
+		<description><![CDATA[銀行口座番号]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="bank_account_number"/>
+		<property name="com.jaspersoft.studio.field.label" value="bank_account_number"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="bank_name" class="java.lang.String">
+		<description><![CDATA[銀行名（例：三菱UFJ銀行）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="bank_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="bank_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="branch_name" class="java.lang.String">
+		<description><![CDATA[支店名（例：東京支店）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="branch_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="branch_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="residence_card_number" class="java.lang.String">
+		<description><![CDATA[在留カード番号]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="residence_card_number"/>
+		<property name="com.jaspersoft.studio.field.label" value="residence_card_number"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="residence_status" class="java.lang.String">
+		<description><![CDATA[在留資格（例：技術・人文知識・国際業務）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="residence_status"/>
+		<property name="com.jaspersoft.studio.field.label" value="residence_status"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="residence_expiry_date_from" class="java.sql.Date">
+		<description><![CDATA[在留期限（開始）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="residence_expiry_date_from"/>
+		<property name="com.jaspersoft.studio.field.label" value="residence_expiry_date_from"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="residence_expiry_date_end" class="java.sql.Date">
+		<description><![CDATA[在留期限（終了）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="residence_expiry_date_end"/>
+		<property name="com.jaspersoft.studio.field.label" value="residence_expiry_date_end"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="login_id" class="java.lang.String">
+		<description><![CDATA[ログインID]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="login_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="login_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="pwd" class="java.lang.String">
+		<description><![CDATA[パスワード（平文保存は非推奨）]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="pwd"/>
+		<property name="com.jaspersoft.studio.field.label" value="pwd"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="auth_code" class="java.lang.String">
+		<description><![CDATA[Google Authenticator key]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="auth_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="auth_code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="user_role" class="java.lang.String">
+		<description><![CDATA[ユーザロール]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="user_role"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_role"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<field name="plan_code" class="java.lang.String">
+		<description><![CDATA[プラン]]></description>
+		<property name="com.jaspersoft.studio.field.name" value="plan_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="plan_code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employees"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="132" splitType="Stretch">
+		<element kind="staticText" uuid="f49d68fd-a2c7-44ec-a5fc-9300d10c85a1" x="120" y="10" width="435" height="93" fontName="UD デジタル 教科書体 N" fontSize="50.0" bold="false" style="Title">
+			<text><![CDATA[共栄ソフトテスト]]></text>
+		</element>
+		<element kind="staticText" uuid="eef58983-008d-4a5b-8e47-97f8d4670c7a" x="336" y="103" width="217" height="29" fontSize="22.0" bold="false" style="SubTitle">
+			<text><![CDATA[Model Test]]></text>
+		</element>
+	</title>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader splitType="Stretch"/>
+	<detail>
+		<band height="91" splitType="Stretch">
+			<element kind="line" uuid="5e41185f-9c90-45ca-839b-e28b308c1430" positionType="FixRelativeToBottom" x="2" y="90" width="551" height="1"/>
+			<element kind="staticText" uuid="6650a6c8-9181-4baa-ae13-1261a2c79ca2" x="58" y="10" width="100" height="30" fontName="HGP創英角ｺﾞｼｯｸUB">
+				<text><![CDATA[社員ID]]></text>
+			</element>
+			<element kind="staticText" uuid="9cd17b15-39e5-4553-94f0-4ed8b9a9d37e" x="190" y="10" width="100" height="30" fontName="HGP創英角ｺﾞｼｯｸUB">
+				<text><![CDATA[社員名]]></text>
+			</element>
+			<element kind="staticText" uuid="37a1904a-bcb1-48d6-868c-8306ffbcca23" x="310" y="10" width="100" height="30" fontName="HGP創英角ｺﾞｼｯｸUB">
+				<text><![CDATA[職位]]></text>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="80" splitType="Stretch">
+		<element kind="line" uuid="fab082df-3ca0-43ac-900e-4da3f8b5a45d" positionType="FixRelativeToBottom" x="0" y="3" width="555" height="1">
+			<pen lineWidth="0.5" lineColor="#999999"/>
+		</element>
+		<element kind="textField" uuid="a61d0b49-1797-4504-9f47-6f5e0c175cb1" x="58" y="20" width="100" height="30" fontName="HGP創英角ｺﾞｼｯｸUB">
+			<expression><![CDATA[$F{employee_id}]]></expression>
+		</element>
+		<element kind="textField" uuid="c25ad3c3-dbb9-4af5-8270-f36b5a5faeb8" x="190" y="20" width="100" height="30" fontName="HGP創英角ｺﾞｼｯｸUB">
+			<expression><![CDATA[$F{name}]]></expression>
+		</element>
+		<element kind="textField" uuid="77965759-2c6a-4081-b1aa-ddbb33da9f29" x="320" y="20" width="100" height="30" fontName="HGS創英角ｺﾞｼｯｸUB">
+			<expression><![CDATA[$F{role}]]></expression>
+		</element>
+	</columnFooter>
+	<pageFooter height="13" splitType="Stretch">
+		<element kind="frame" uuid="bfdca178-800d-445c-9a31-bb616a00e8ce" mode="Opaque" x="2" y="0" width="555" height="13" forecolor="#D0B48E" backcolor="#9DB1B8">
+			<element kind="textField" uuid="2fba0f87-635e-476d-858f-d102b26146fe" x="513" y="0" width="40" height="13" forecolor="#FFFFFF" fontSize="10.0" evaluationTime="Report" bold="false" vTextAlign="Middle" style="Column header">
+				<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+			</element>
+			<element kind="textField" uuid="e454d23d-bcfc-4c79-a399-0ef520a3150a" mode="Transparent" x="433" y="0" width="80" height="13" forecolor="#FFFFFF" fontSize="10.0" bold="false" hTextAlign="Right" vTextAlign="Middle" style="Column header">
+				<expression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></expression>
+			</element>
+			<element kind="textField" uuid="14d8de1e-8695-4078-a67f-0e69172574d5" x="2" y="0" width="197" height="13" forecolor="#FFFFFF" fontSize="10.0" pattern="EEEEE dd MMMMM yyyy" bold="false" vTextAlign="Middle" style="Column header">
+				<expression><![CDATA[new java.util.Date()]]></expression>
+			</element>
+		</element>
+	</pageFooter>
+	<summary splitType="Stretch"/>
+</jasperReport>
