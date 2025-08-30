@@ -52,8 +52,6 @@ public class printController extends BaseController{
     @PostMapping("/printPDF")
     public void login(@RequestBody Map<String, Object> loginData) {
 
-    	
-    	
     	 try {
     		 
     		 GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
