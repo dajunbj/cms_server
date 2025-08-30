@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cms.module.customer.mapper.CustomerMapper">
+	<select id="selectCustomerCount"
+        resultType="Integer">
+        SELECT
+        count(1) as recordCount
+        FROM
+        customer
+	</select>
+	
+	<select id="selectResponsibleCount"
+        resultType="Integer">
+        SELECT
+        count(1) as recordCount
+        FROM
+        responsible
+	</select>
+	
+	<select id="selectCustomer"
+        parameterType="map"
+        resultType="com.cms.module.customer.entity.CustomerBean">
+        SELECT DISTINCT
+        cus.customer_id,
+        cus.customer_name,
+        cus.customer_type,
+        cus.customer_address,
+        cus.customer_represent,
+        cus.customer_phone,
+        e.name,
+        cus.updated_at
+        FROM
+        customer as cus LEFT JOIN responsible as res on cus.customer_id = res.customer_id
+                        LEFT JOIN employees as e on res.employee_id = e.employee_id
+        <where>
+        cus.deleteFlag = false
+        <if test="customer_name != null  and customer_name.trim() != ''">
+        	and cus.customer_name = #{customer_name}
+        </if>
+        <if test="customer_type != null and customer_type != ''">
+        	and cus.customer_type = #{customer_type}
+        </if>
+         <if test="customer_represent != null and customer_represent != ''">
+        	and cus.customer_represent = #{customer_represent}
+        </if>
+         <if test="customer_address != null and customer_address != ''">
+        	and cus.customer_address = #{customer_address}
+        </if>
+         <if test="employee_id != null and employee_id != ''">
+        	and res.employee_id = #{employee_id}
+        </if>
+        </where>
+        limit #{pageSize}
+        offset #{currentPage}
+	</select>
+	
+	<select id="selectResponsible"
+        parameterType="map"
+        resultType="com.cms.module.customer.entity.ResponsibleBean">
+        SELECT DISTINCT
+        res.responsible_id,
+        res.responsible_name,
+        res.responsible_type,
+        cus.customer_name,
+        de.department_name,
+        e.name,
+        res.updated_at
+        FROM
+        responsible as res LEFT JOIN customer as cus on res.customer_id = cus.customer_id
+                        LEFT JOIN customer_department as de on res.department_id = de.department_id
+                        LEFT JOIN employees as e on res.employee_id = e.employee_id
+        <where>
+        res.deleteFlag = false
+        <if test="responsible_name != null  and responsible_name.trim() != ''">
+        	and res.responsible_name = #{responsible_name}
+        </if>
+        <if test="customer_id != null">
+        	and res.customer_id = #{customer_id}
+        </if>
+        </where>
+        limit #{pageSize}
+        offset #{currentPage}
+	</select>
+	
+	<select id="findByCustomerId" resultType="com.cms.module.customer.entity.CustomerBean">
+	    SELECT *
+	    FROM customer 
+	    WHERE customer_id = #{customer_id}
+    </select>
+    
+    <select id="findByResponsibleId" resultType="com.cms.module.customer.entity.ResponsibleBean">
+	    SELECT res.*,c.customer_name,de.department_name
+	    FROM responsible as res LEFT JOIN customer as c ON res.customer_id = c.customer_id
+	                            LEFT JOIN customer_department as de ON res.department_id = de.department_id
+	    WHERE responsible_id = #{responsible_id}
+    </select>
+    
+    <select id="getCustomerUpdate" resultType="java.time.LocalDateTime">
+        SELECT updated_at
+        FROM customer
+        WHERE customer_id = #{customer_id}
+    </select>
+    
+    <select id="getResponsibleUpdate" resultType="java.time.LocalDateTime">
+        SELECT updated_at
+        FROM responsible
+        WHERE responsible_id = #{responsible_id}
+    </select>
+    
+    <update id="deleteSelectedCustomer">
+	    UPDATE customer
+	    SET deleteFlag = true
+	    WHERE customer_id = #{customer_id}
+    </update>
+    
+    <update id="deleteSelectedResponsible">
+	    UPDATE responsible
+	    SET deleteFlag = true
+	    WHERE responsible_id = #{responsible_id}
+    </update>
+    
+    <insert id="registerCustomer" parameterType="com.cms.module.customer.entity.CustomerBean" useGeneratedKeys="true" keyProperty="customer_id">
+	    INSERT INTO customer (
+	        customer_name,
+	        customer_email,
+	        customer_phone,
+	        customer_type,
+	        customer_address,
+	        customer_represent,
+	        customer_fax,
+	        customer_mail,
+	        deleteFlag,
+	        created_at,
+	        updated_at
+	    )
+	    VALUES (
+	        #{customer_name},
+	        #{customer_email},
+	        #{customer_phone},
+	        #{customer_type},
+	        #{customer_address},
+	        #{customer_represent},
+	        #{customer_fax},
+	        #{customer_mail},
+	        #{deleteFlag},
+	        #{created_at},
+	        #{updated_at}
+	    )
+	</insert>
+	
+	<insert id="registerResponsible" parameterType="com.cms.module.customer.entity.ResponsibleBean">
+	    INSERT INTO responsible (
+	        responsible_id,
+	        customer_id,
+	        department_id,
+	        employee_id,
+	        responsible_name,
+	        responsible_email,
+	        responsible_phone,
+	        responsible_type,
+	        deleteFlag,
+	        created_at,
+	        updated_at
+	    )
+	    VALUES (
+	        #{responsible_id},
+	        #{customer_id},
+	        #{department_id},
+	        #{employee_id},
+	        #{responsible_name},
+	        #{responsible_email},
+	        #{responsible_phone},
+	        #{responsible_type},
+	        #{deleteFlag},
+	        #{created_at},
+	        #{updated_at}
+	    )
+	</insert>
+	
+	<update id="updateCustomer" parameterType="com.cms.module.customer.entity.CustomerBean">
+	    UPDATE customer
+	    SET customer_name = #{customer_name}, customer_email = #{customer_email}, customer_phone = #{customer_phone}, customer_type = #{customer_type},
+	        customer_represent = #{customer_represent}, customer_address = #{customer_address}, customer_fax = #{customer_fax},
+	        customer_mail = #{customer_mail}, updated_at = #{updated_at}
+	    WHERE customer_id = #{customer_id}
+    </update>
+    
+    <update id="updateResponsible" parameterType="com.cms.module.customer.entity.ResponsibleBean">
+	    UPDATE responsible
+	    SET customer_id = #{customer_id}, department_id = #{department_id}, responsible_email = #{responsible_email},
+	        responsible_phone = #{responsible_phone}, responsible_type = #{responsible_type}, responsible_name = #{responsible_name},
+	        updated_at = #{updated_at}
+	    WHERE responsible_id = #{responsible_id}
+    </update>
+	
+</mapper>

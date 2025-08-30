@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.cms.module.attendance.mapper.AttendanceMapper">
+
+	<select id="selectByMonth" 
+		resultType="com.cms.module.attendance.entity.Attendance">
+		SELECT * FROM attendance_sheet
+		WHERE employee_id = #{employee_id} AND DATE_FORMAT(date, '%Y-%m') =
+		#{month}
+	</select>
+
+	<insert id="insertBatch">
+		INSERT INTO attendance_sheet
+		(employee_id, contract_id, date, start_time, end_time, break_hours,
+		attendance_type, is_modified)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.employee_id}, #{item.contract_id}, #{item.date},
+			#{item.start_time}, #{item.end_time},
+			#{item.break_hours}, #{item.attendance_type}, false)
+		</foreach>
+	</insert>
+
+	<update id="updateById">
+		UPDATE attendance_sheet
+		SET start_time = #{start_time},
+		end_time = #{end_time},
+		case_name = #{case_name},
+		break_hours = #{break_hours},
+		attendance_type = #{attendance_type},
+		is_modified = true
+		WHERE sheet_id = #{sheet_id}
+	</update>
+	
+	<select id="select" parameterType="map" resultType="com.cms.module.attendance.entity.Attendance">
+	  SELECT
+	    a.*,
+	    e.name AS employeeName
+	  FROM attendance_sheet a
+	  LEFT JOIN employees e ON a.employee_id = e.employee_id
+	  <where>
+	    <if test="employee_id != null">
+	      AND a.employee_id = #{employee_id}
+	    </if>
+	    <if test="month != null and month != ''">
+	      AND DATE_FORMAT(a.workday, '%Y-%m') = #{month}
+	    </if>
+	    <if test="employeeName != null and employeeName != ''">
+	      AND e.name LIKE CONCAT('%', #{employeeName}, '%')
+	    </if>
+	  </where>
+	</select>
+	
+	<select id="getMonthlyData" parameterType="map" resultType="com.cms.module.attendance.entity.Attendance">
+	  SELECT
+	    a.employee_id,
+	    e.name AS employeeName,
+	    DATE_FORMAT(a.workday, '%Y-%m') AS workmonth,   
+	    SUM(a.working_hours) AS workhours,
+	    COUNT(DISTINCT a.workday) AS workday_count
+	  FROM attendance_sheet a
+	  LEFT JOIN employees e ON a.employee_id = e.employee_id
+	  <where>
+	    <if test="employeeName != null and employeeName != ''">
+	      AND e.name LIKE CONCAT('%', #{employeeName}, '%')
+	    </if>
+	    <if test="month != null and month != ''">
+	      AND DATE_FORMAT(a.workday, '%Y-%m') = #{month}
+	    </if>
+	  </where>
+	  GROUP BY a.employee_id, DATE_FORMAT(a.workday, '%Y-%m')
+	  ORDER BY a.employee_id, DATE_FORMAT(a.workday, '%Y-%m')
+	</select>
+	
+    <select id="getMonthlyDataByEmployeeId" parameterType="map" resultType="com.cms.module.attendance.entity.Attendance">
+	  SELECT
+	    a.*,
+	    e.name as employeeName
+	  FROM attendance_sheet a
+	  LEFT JOIN employees e ON a.employee_id = e.employee_id
+	  <where>
+	  	<if test="employee_id != null and employee_id != ''">
+	      AND e.employee_id = #{employee_id}
+	    </if>
+
+	    <if test="month != null and month != ''">
+	      AND DATE_FORMAT(a.workday, '%Y-%m') = #{month}
+	    </if>
+	  </where>
+	  ORDER BY DATE_FORMAT(a.workday, '%Y-%m')
+	</select>
+
+</mapper>

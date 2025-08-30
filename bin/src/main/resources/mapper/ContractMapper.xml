@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cms.module.contract.mapper.ContractMapper">
+	<select id="selectCount"
+        resultType="Integer">
+        SELECT
+        count(1) as recordCount
+        FROM
+        contracts 
+	</select>
+	
+	<select id="getEndDate" 
+	        resultType="Date">
+	        SELECT
+	        end_date
+	        FROM
+	        contracts
+	        WHERE
+	        contract_id = #{contract_id}
+	</select>
+	
+
+	<select id="select"
+        parameterType="map"
+        resultType="com.cms.module.contract.entity.ContractBean">
+        SELECT
+        con.contract_id,
+        e.name,
+        con.employee_type,
+        con.start_date,
+        con.end_date,
+        con.unit_price,
+        cus.customer_name,
+        con.update_time,
+        res.responsible_name
+        FROM
+        contracts as con LEFT JOIN employees as e on con.employee_id = e.employee_id
+                        LEFT JOIN customer as cus on con.custom_id = cus.customer_id 
+                        LEFT JOIN responsible as res on con.responsible_id = res.responsible_id
+        <where>
+        <if test="name != null  and name.trim() != ''">
+        	and e.name = #{name}
+        </if>
+        <if test="customer_name != null and customer_name.trim() != ''">
+            and cus.customer_name = #{customer_name}
+        </if>
+        <if test="responsible_name != null and responsible_name.trim() != ''">
+        	and res.responsible_name = #{responsible_name}
+        </if>
+        <if test="start_date != null and start_date.trim() != '' and end_date != null and end_date.trim() != ''">
+            and con.start_date >= #{start_date} and con.end_date &lt;= #{end_date}
+        </if>	
+        <if test="start_date != null and start_date.trim() != '' and (end_date == null or end_date.trim() == '')">
+            and con.start_date >= #{start_date}
+        </if>
+        <if test="end_date != null and end_date.trim() != '' and (start_date == null or start_date.trim() == '')">
+            and con.end_date &lt;= #{end_date} #{end_date}
+        </if>
+        <if test="employee_type != null  and employee_type.trim() != ''">
+        	and con.employee_type = #{employee_type}
+        </if>
+        </where>
+        limit #{pageSize}
+        offset #{currentPage}
+	</select>
+	
+	 <insert id="updateEndDate" parameterType="com.cms.module.contract.entity.ContractBean">
+	    <if test="contract_id != null">
+	    UPDATE contracts
+	    SET end_date = #{end_date}
+	    WHERE contract_id = #{contract_id}
+	    </if>
+	</insert>
+	
+<select id="findById" resultType="com.cms.module.employee.entity.Employees">
+    SELECT * FROM cms_employee WHERE employeeId = #{employeeId}
+</select>
+
+<select id="findByContractId" resultType="com.cms.module.contract.entity.ContractBean">
+    SELECT c.*,
+           e.name,
+           e.phone_number,
+           cus.customer_name,
+           cus.customer_phone,
+           res.responsible_name,
+           res.responsible_phone
+    FROM contracts as c LEFT JOIN employees as e on c.employee_id = e.employee_id
+                        LEFT JOIN customer as cus on c.custom_id = cus.customer_id
+                        LEFT JOIN responsible as res on c.responsible_id = res.responsible_id 
+    WHERE contract_id = #{contract_id}
+</select>
+
+<update id="updateContract" parameterType="com.cms.module.contract.entity.ContractBean">
+    UPDATE contracts
+    SET custom_id = #{custom_id}, employee_id = #{employee_id}, responsible_id = #{responsible_id}, case_id = #{case_id},
+        employee_type = #{employee_type}, start_date = #{start_date}, end_date = #{end_date},
+        unit_price = #{unit_price}, tax_rate = #{tax_rate},working_hours_min = #{working_hours_min},
+        working_hours_max = #{working_hours_max},overtime_included = #{overtime_included},overtime_start_time = #{overtime_start_time},
+        overtime_limit_hours = #{overtime_limit_hours},update_time = #{update_time}
+    WHERE contract_id = #{contract_id}
+</update>
+
+	<select id="selectCase" 
+	        resultType="map">
+	        SELECT
+	        case_title,
+	        case_id,
+	        customer_id
+	        FROM
+	        `case`
+	        <where>
+	        <if test="case_title != null and case_title.trim() != ''">
+	        case_title = #{case_title}
+	        </if>
+	        </where>
+	</select>
+	
+	<select id="selectEmployee" 
+	        resultType="map">
+	        SELECT
+	        name,
+	        employee_id
+	        FROM
+	        employees
+	        <where>
+	        <if test="name != null and name.trim() != ''">
+	        name = #{name}
+	        </if>
+	        </where>
+	</select>
+	
+	<select id="selectCustomerByName" 
+	        resultType="map">
+	        SELECT DISTINCT
+	        cus.customer_name,
+	        cus.customer_id
+	        FROM
+	        customer as cus LEFT JOIN responsible as res on cus.customer_id=res.customer_id
+	        <where>
+	        cus.deleteFlag = false
+	        <if test="customer_name != null and customer_name.trim() != ''">
+	        customer_name = #{customer_name}
+	        </if>
+	        </where>
+	</select>
+	
+	<select id="selectCustomer" 
+	        resultType="map">
+	        SELECT 
+	        customer_name,
+	        responsible_name
+	        FROM
+	        customer as cus LEFT JOIN responsible as res on cus.customer_id = res.customer_id
+	        <where>
+	        <if test="custom_id != 0">
+	        cus.customer_id = #{custom_id}
+	        </if>
+	        </where>
+	</select>
+	
+    <select id="getUpdateTime" resultType="java.time.LocalDateTime">
+        SELECT update_time
+        FROM contracts
+        WHERE contract_id = #{contract_id}
+    </select>
+    	
+	<delete id ="deleteSelected">
+	         DELETE FROM
+	         contracts
+	         <where>
+	         <if test ="contract_id != 0">
+	         contract_id = #{contract_id}
+	         </if>
+	         </where>
+	</delete>
+	
+	<insert id="insertContract" parameterType="com.cms.module.contract.entity.ContractBean">
+	    INSERT INTO contracts (
+	        contract_id,
+	        custom_id,
+	        employee_id,
+	        responsible_id,
+	        case_id,
+	        employee_type,
+	        start_date,
+	        end_date,
+	        unit_price,
+	        tax_rate,
+	        working_hours_min,
+	        working_hours_max,
+	        overtime_included,
+	        overtime_start_time,
+	        overtime_limit_hours,
+	        update_time
+	    )
+	    VALUES (
+	        #{contract_id},
+	        #{custom_id},
+	        #{employee_id},
+	        #{responsible_id},
+	        #{case_id},
+	        #{employee_type},
+	        #{start_date},
+	        #{end_date},
+	        #{unit_price},
+	        #{tax_rate},
+	        #{working_hours_min},
+	        #{working_hours_max},
+	        #{overtime_included},
+	        #{overtime_start_time},
+	        #{overtime_limit_hours},
+	        #{update_time}
+	    )
+	</insert>
+
+</mapper>

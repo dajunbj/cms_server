@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cms.api.mapper.ApiMapper">
+	
+	<select id="shareCheck" resultType="com.cms.api.entity.ApiBean">
+	    SELECT share_company_id,valid_flg
+	    	FROM share_company 
+	    		WHERE share_company_id = #{share_company_id}
+	</select>
+	
+	<select id="search"
+        resultType="com.cms.api.entity.ResponseBean">
+        SELECT
+        com.company_name,
+        em.name,
+        em.phone_number,
+        c.case_id,
+        c.case_title,
+        c.case_description,
+        c.case_budget,
+        c.start_date,
+        c.case_skill,
+        c.case_address,
+        cus.customer_name,
+        res.responsible_name,
+        res.responsible_phone
+        FROM
+        case_share as cs LEFT JOIN `case` as c ON cs.case_id = c.case_id
+                         LEFT JOIN share_company as sc ON cs.share_company_id = sc.share_company_id 
+                         LEFT JOIN company as com ON sc.affiliate_id = com.company_id
+                         LEFT JOIN employees as em ON c.employee_id = em.employee_id AND em.employee_type = '責任者'
+                         LEFT JOIN customer as cus ON c.customer_id = cus.customer_id
+                         LEFT JOIN responsible as res ON c.responsible_id = res.responsible_id 
+        <where>
+        <if test="share_company_id != null">
+            and sc.share_company_id = #{share_company_id}
+        </if>
+        <if test="start_date != null and start_date.trim() != '' and end_date != null and end_date.trim() != ''">
+            and c.start_date >= #{start_date} and c.end_date &lt;= #{end_date}
+        </if>	
+        <if test="start_date != null and start_date.trim() != '' and (end_date == null or end_date.trim() == '')">
+            and c.start_date >= #{start_date}
+        </if>
+        <if test="end_date != null and end_date.trim() != '' and (start_date == null or start_date.trim() == '')">
+            and c.end_date &lt;= #{end_date}
+        </if>
+        <if test="case_skill != null  and case_skill.trim() != ''">
+        	and c.case_skill = #{case_skill}
+        </if>
+        <if test="case_address != null  and case_address.trim() != ''">
+        	and c.case_address = #{case_address}
+        </if>
+        </where>
+	</select>
+
+
+</mapper>
