@@ -35,3 +35,5 @@ logs/
 *.log
 *.log.*
 *.gz
+logs/ 
+*.log 
