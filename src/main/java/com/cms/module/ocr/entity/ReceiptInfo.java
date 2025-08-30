@@ -47,6 +47,9 @@ public class ReceiptInfo {
 
     /** 作成日時（登録日時） */
     private LocalDateTime createdAt;
+    
+    /** 登録番号　*/
+    private String registrationNumber;
 
     // ================== Getter / Setter ==================
 
@@ -76,4 +79,7 @@ public class ReceiptInfo {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public String getRegistrationNumber() { return registrationNumber; }
+    public void setRegistrationNumber(String registrationNumber) { this.registrationNumber = registrationNumber; }
 }

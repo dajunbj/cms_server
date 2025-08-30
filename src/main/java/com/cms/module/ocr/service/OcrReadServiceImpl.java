@@ -63,7 +63,7 @@ public class OcrReadServiceImpl implements OcrReadService {
     private String googleKeyPath;
 
     /** 画像保存ルート（例: C:/data/ocr_image_save/） */
-    @Value("${ocr.upload-dir:C:/Users/Micheal Zhang/Desktop/ocr_image_save/}")
+    @Value("${ocr.upload-dir:C:/Users/Micheal/Desktop/ocr_image_save/}")
     private String uploadRoot;
 
     /** 公開パスのプレフィックス（例: /uploads/ → uploadRoot にマップ） */
