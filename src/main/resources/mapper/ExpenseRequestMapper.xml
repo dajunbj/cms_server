@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  ExpenseRequestMapper.xml
+  用途：経費申請テーブル（expense_request）の操作を定義
+
+  主な機能：
+    - 申請の新規作成
+    - 関連領収書の金額合計
+    - 申請一覧・件数取得
+    - 申請詳細および関連領収書取得
+    - 承認／差し戻し 更新
+-->
+<mapper namespace="com.cms.module.ocr.mapper.ExpenseRequestMapper">
+
+  <!-- 新規経費申請を登録 -->
+  <insert id="insert" parameterType="com.cms.module.ocr.entity.ExpenseRequest"
+          useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO expense_request
+      (applicant_id, summary, status, approved_by, approved_at, total_amount, created_at, reject_reason)
+    VALUES
+      (#{applicantId}, #{summary}, #{status}, #{approvedBy}, #{approvedAt},
+       #{totalAmount}, #{createdAt}, #{rejectReason})
+  </insert>
+
+  <!-- 領収書金額の合計（整数円） -->
+  <select id="sumReceiptAmounts" resultType="long">
+    SELECT COALESCE(SUM(amount), 0)
+    FROM receipt_info
+    WHERE id IN
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </select>
+
+  <!-- 経費申請の一覧（フィルタ + ページング） -->
+  <select id="list" resultType="com.cms.module.ocr.entity.ExpenseRequest">
+    SELECT
+      id,
+      applicant_id AS applicantId,
+      summary,
+      status,
+      approved_by  AS approvedBy,
+      approved_at  AS approvedAt,
+      total_amount AS totalAmount,
+      created_at   AS createdAt,
+      reject_reason AS rejectReason
+    FROM expense_request
+    <where>
+      <if test="status != null and status != ''">
+        AND status = #{status}
+      </if>
+      <if test="applicantId != null">
+        AND applicant_id = #{applicantId}
+      </if>
+    </where>
+    ORDER BY created_at DESC
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+  <!-- 経費申請件数カウント -->
+  <select id="count" resultType="int">
+    SELECT COUNT(*)
+    FROM expense_request
+    <where>
+      <if test="status != null and status != ''">
+        AND status = #{status}
+      </if>
+      <if test="applicantId != null">
+        AND applicant_id = #{applicantId}
+      </if>
+    </where>
+  </select>
+
+  <!-- ID指定で詳細取得 -->
+  <select id="findById" parameterType="long" resultType="com.cms.module.ocr.entity.ExpenseRequest">
+    SELECT
+      id,
+      applicant_id AS applicantId,
+      summary,
+      status,
+      approved_by  AS approvedBy,
+      approved_at  AS approvedAt,
+      total_amount AS totalAmount,
+      created_at   AS createdAt,
+      reject_reason AS rejectReason
+    FROM expense_request
+    WHERE id = #{id}
+  </select>
+
+  <!-- 経費申請に紐づく領収書一覧を取得 -->
+  <select id="findReceiptsByRequestId" resultType="com.cms.module.ocr.dto.ReceiptInfoListItem">
+    SELECT
+      r.id,
+      r.image_path  AS imagePath,
+      r.store_name  AS storeName,
+      r.issue_date  AS issueDate,
+      r.amount      AS amount,
+      r.status      AS status,
+      r.created_at  AS createdAt
+    FROM expense_receipt_link l
+    JOIN receipt_info r ON r.id = l.receipt_id
+    WHERE l.expense_request_id = #{requestId}
+    ORDER BY r.created_at DESC
+  </select>
+
+  <!-- 承認処理（申請済 → 承認済） -->
+  <update id="approve">
+    UPDATE expense_request
+    SET status = '承認済',
+        approved_by = #{approver},
+        approved_at = NOW(),
+        reject_reason = NULL
+    WHERE id = #{id}
+      AND status = '申請済'
+  </update>
+
+  <!-- 差し戻し処理（申請済 → 差し戻し） -->
+  <update id="reject">
+    UPDATE expense_request
+    SET status = '差し戻し',
+        approved_by = #{approver},
+        approved_at = NOW(),
+        reject_reason = #{reason}
+    WHERE id = #{id}
+      AND status = '申請済'
+  </update>
+
+</mapper>
