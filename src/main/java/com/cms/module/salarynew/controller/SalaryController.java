@@ -53,17 +53,29 @@ public class SalaryController {
     return ApiResp.ok(optionService.loadOptions());
   }
 
+  /*
+   * 一覧画面・検索ボタン 
+   */
   @PostMapping("/list")
   public ApiResp<PageDTO<SalaryListItemDTO>> list(@RequestBody SalaryListQuery q){
-    return ApiResp.ok(service.list(q));
+	  
+	  //一覧検索
+	  PageDTO<SalaryListItemDTO> result = service.list(q);
+	  
+    return ApiResp.ok(result);
   }
-
+  
+  /*
+   * 一覧画面・CSV出力 
+   */
   @PostMapping(value="/export", produces = "text/csv;charset=UTF-8")
   public ResponseEntity<String> export(@RequestBody SalaryListQuery q){
+	  
     String csv = service.exportCsv(q);
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.valueOf("text/csv;charset=UTF-8"));
     headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"salary_list.csv\"");
+    
     return new ResponseEntity<>(csv, headers, HttpStatus.OK);
   }
   
