@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  ExpenseReceiptLinkMapper.xml
+  用途：経費申請（expense_request）と領収書（receipt_info）のリンクテーブルを操作
+
+  主な機能：
+    - 複数領収書を一括で経費申請に紐づける
+  注意点：
+    - receiptIds が空の場合は不正SQLになるため、事前チェック必須
+    - 重複登録を避けたい場合は、DB側でユニーク制約を付与するのが望ましい
+-->
+<mapper namespace="com.cms.module.ocr.mapper.ExpenseReceiptLinkMapper">
+
+  <!-- 領収書IDリストを一括INSERT -->
+  <insert id="batchInsert">
+    INSERT INTO expense_receipt_link (expense_request_id, receipt_id)
+    VALUES
+    <foreach collection="receiptIds" item="rid" separator=",">
+      (#{expenseRequestId}, #{rid})
+    </foreach>
+  </insert>
+
+</mapper>

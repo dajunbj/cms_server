@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cms.module.login.mapper.LoginMapper">
+	<select id="selectCount"
+        parameterType="map"
+        resultType="Integer">
+        SELECT
+        count(1) 
+        FROM
+        employees
+        <where>
+	        <if test="username != null  and username.trim() != ''">
+	        	and login_id = #{username}
+	        </if>
+	        <if test="password != null  and password.trim() != ''">
+	        	and pwd = #{password}
+	        </if>
+        </where>
+	</select>
+	<select id="selectOne"
+        parameterType="map"
+        resultType="com.cms.module.employee.entity.Employees">
+        SELECT
+        * 
+        FROM
+        employees
+        <where>
+	        <if test="username != null  and username.trim() != ''">
+	        	and login_id = #{username}
+	        </if>
+	        <if test="password != null  and password.trim() != ''">
+	        	and pwd = #{password}
+	        </if>
+        </where>
+	</select>
+
+</mapper>

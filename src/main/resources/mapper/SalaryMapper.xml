@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cms.module.salarynew.mapper.SalaryMapper">
+
+    <!-- 社員一覧 -->
+    <select id="listEmployees" resultType="map">
+        SELECT employeeId as id, employeeId as employee_code, name
+        FROM cms_employee
+        ORDER BY employeeId
+    </select>
+
+    <!-- 給与明細 -->
+    <select id="getDetail" parameterType="map" resultType="com.cms.module.salarynew.dto.SalaryDetailDto">
+        SELECT sd.*,
+               e.employeeId as employee_code,
+               e.name AS employee_name
+        FROM salarydetail sd
+        LEFT JOIN cms_employee e ON e.employeeId = sd.employee_id
+        WHERE sd.employee_id = #{employeeId}
+          AND sd.salary_month = #{salaryMonth}
+    </select>
+
+</mapper>

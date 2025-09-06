@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  ReceiptInfoMapper.xml
+  領収書情報（receipt_info テーブル）操作用 Mapper 定義
+  主な機能:
+    - 新規登録
+    - 条件検索・件数取得
+    - ステータス更新・可否判定
+    - ユーザー別一覧（Excel 出力）
+    - メタ更新
+    - 削除
+-->
+<mapper namespace="com.cms.module.ocr.mapper.ReceiptInfoMapper">
+
+  <!-- 新規登録：entity.id を自動採番で取得 -->
+  <insert id="insert"
+          parameterType="com.cms.module.ocr.entity.ReceiptInfo"
+          useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO receipt_info (
+      image_path,
+      issuer,
+      registration_number,   <!-- DBにカラムが存在しない場合は削除 -->
+      issue_date,
+      amount,
+      full_text,
+      user_id,
+      status,
+      created_at
+    ) VALUES (
+      #{imagePath},
+      #{issuer},
+      #{registrationNumber}, <!-- DBにカラムが存在しない場合は削除 -->
+      #{issueDate},
+      #{amount},
+      #{fullText},
+      #{userId},
+      #{status},
+      #{createdAt}
+    )
+  </insert>
+
+  <!-- 一覧検索（ページング）。検索キーは issuer に統一 -->
+  <select id="queryByCondition"
+          resultType="com.cms.module.ocr.dto.ReceiptInfoListItem">
+    SELECT
+      id,
+      image_path AS imagePath,
+      issuer     AS issuer,
+      registration_number AS registrationNumber,
+      issue_date AS issueDate,
+      amount,
+      status,
+      created_at AS createdAt
+    FROM receipt_info
+    <where>
+      <if test="cond.issuer != null and cond.issuer != ''">
+        AND issuer LIKE CONCAT('%', #{cond.issuer}, '%')
+      </if>
+      <if test="cond.status != null and cond.status != ''">
+        AND status = #{cond.status}
+      </if>
+    </where>
+    ORDER BY created_at DESC
+    LIMIT #{cond.limit} OFFSET #{cond.offset}
+  </select>
+
+  <!-- 件数 -->
+  <select id="countByCondition" resultType="int">
+    SELECT COUNT(*)
+    FROM receipt_info
+    <where>
+      <if test="cond.issuer != null and cond.issuer != ''">
+        AND issuer LIKE CONCAT('%', #{cond.issuer}, '%')
+      </if>
+      <if test="cond.status != null and cond.status != ''">
+        AND status = #{cond.status}
+      </if>
+    </where>
+  </select>
+
+  <!-- ステータス一括更新（草稿／確認済 → 申請済） -->
+  <update id="updateStatusAppliedBatch">
+    UPDATE receipt_info
+    SET status = '申請済'
+    WHERE id IN
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+      AND status IN ('草稿','確認済')
+  </update>
+
+  <!-- 申請不可件数（草稿・確認済 以外） -->
+  <select id="countNotApplyable" resultType="int">
+    SELECT COUNT(*)
+    FROM receipt_info
+    WHERE id IN
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+      AND status NOT IN ('草稿','確認済')
+  </select>
+
+  <!-- ユーザー別一覧（Excel 出力用） -->
+  <select id="findByUserId"
+          parameterType="long"
+          resultType="com.cms.module.ocr.dto.ReceiptInfoListItem">
+    SELECT
+      id,
+      image_path          AS imagePath,
+      issuer              AS issuer,
+      registration_number AS registrationNumber,
+      issue_date          AS issueDate,
+      amount,
+      status,
+      created_at          AS createdAt
+    FROM receipt_info
+    WHERE user_id = #{userId}
+    ORDER BY created_at DESC
+  </select>
+  
+  <!-- メタ更新（issuer, issue_date, amount のみ更新）
+       full_text / image_path は変更しない -->
+  <update id="updateMeta"
+          parameterType="com.cms.module.ocr.entity.ReceiptInfo">
+    UPDATE receipt_info
+    SET
+      issuer     = #{e.issuer},
+      registration_number = #{e.registrationNumber},
+      issue_date = #{e.issueDate},
+      amount     = #{e.amount}
+    WHERE id = #{e.id}
+      AND user_id = #{e.userId}
+  </update>
+  
+  <!-- 保存取消（物理削除）。論理削除にする場合は status 更新に変更 -->
+  <delete id="deleteByIdAndUser">
+    DELETE FROM receipt_info
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </delete>
+
+</mapper>
