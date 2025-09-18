@@ -39,7 +39,7 @@ public class ReceiptQueryController {
     public ResponseEntity<Map<String, Object>> getReceiptList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String Issuer,
+            @RequestParam(required = false) String issuer,
             @RequestParam(required = false) String status
     ) {
         try {
@@ -51,7 +51,7 @@ public class ReceiptQueryController {
             ReceiptQueryCondition cond = new ReceiptQueryCondition();
             cond.setOffset((page - 1) * size);
             cond.setLimit(size);
-            cond.setIssuer(Issuer);
+            cond.setIssuer(issuer);
             cond.setStatus(status);
 
             // データ取得
