@@ -28,7 +28,7 @@ public class ReceiptInfo {
     private String imagePath;
 
     /** 発行元（店名、会社名など） */
-    private String Issuer;
+    private String issuer;
 
     /** 発行日 */
     private LocalDate issueDate;
@@ -59,8 +59,8 @@ public class ReceiptInfo {
     public String getImagePath() { return imagePath; }
     public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
-    public String getIssuer() { return Issuer; }
-    public void setIssuer(String Issuer) { this.Issuer = Issuer; }
+    public String getIssuer() { return issuer; }
+    public void setIssuer(String Issuer) { this.issuer = issuer; }
 
     public LocalDate getIssueDate() { return issueDate; }
     public void setIssueDate(LocalDate issueDate) { this.issueDate = issueDate; }
