@@ -95,7 +95,7 @@
     SELECT
       r.id,
       r.image_path  AS imagePath,
-      r.store_name  AS storeName,
+      r.issuer      AS issuer,
       r.issue_date  AS issueDate,
       r.amount      AS amount,
       r.status      AS status,
