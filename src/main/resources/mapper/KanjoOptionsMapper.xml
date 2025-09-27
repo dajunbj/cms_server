@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cms.module.kanjo.options.mapper.KanjoOptionsMapper">
+
+  <resultMap id="RowMap" type="com.cms.module.kanjo.options.dto.KanjoCategoryRow">
+    <result column="id"          property="id"/>
+    <result column="code"        property="code"/>
+    <result column="parent_code" property="parentCode"/>
+    <result column="name_ja"     property="nameJa"/>
+    <result column="name_zh"     property="nameZh"/>
+    <result column="level_no"    property="levelNo"/>
+    <result column="sort_no"     property="sortNo"/>
+  </resultMap>
+
+  <!-- ✅ 使用视图 v_acct_category_effective -->
+  <select id="selectEffectiveByCompany" parameterType="long" resultMap="RowMap">
+    WITH ranked AS (
+      SELECT
+        a.id, a.code, a.level_no, a.sort_no, a.name_ja, a.name_zh,
+        p.code AS parent_code,
+        ROW_NUMBER() OVER (
+          PARTITION BY a.code
+          ORDER BY CASE WHEN a.company_id = #{companyId} THEN 0 ELSE 1 END, a.id
+        ) rn
+      FROM v_acct_category_effective a
+      LEFT JOIN acct_category p ON p.id = a.parent_id
+      WHERE a.company_id = #{companyId} OR a.company_id IS NULL
+    )
+    SELECT id, code, level_no, sort_no, name_ja, name_zh, parent_code
+    FROM ranked
+    WHERE rn = 1
+    ORDER BY level_no, sort_no, id
+  </select>
+
+  <!-- ♻️ 内联版本（已整体注释；如停用视图再启用）
+  <select id="selectEffectiveByCompanyInline" parameterType="long" resultMap="RowMap">
+    WITH ranked AS (
+      SELECT
+        a.id, a.code, a.level_no, a.sort_no, a.name_ja, a.name_zh,
+        p.code AS parent_code,
+        ROW_NUMBER() OVER (
+          PARTITION BY a.code
+          ORDER BY CASE WHEN a.company_id = #{companyId} THEN 0 ELSE 1 END, a.id
+        ) rn
+      FROM acct_category a
+      LEFT JOIN acct_category p ON p.id = a.parent_id
+      WHERE a.is_active = 1
+        AND (a.valid_from IS NULL OR a.valid_from &lt;= CURRENT_DATE())
+        AND (a.valid_to   IS NULL OR a.valid_to   &gt;= CURRENT_DATE())
+        AND (a.company_id = #{companyId} OR a.company_id IS NULL)
+    )
+    SELECT id, code, level_no, sort_no, name_ja, name_zh, parent_code
+    FROM ranked
+    WHERE rn = 1
+    ORDER BY level_no, sort_no, id
+  </select>
+  -->
+
+  <!-- 懒加载 SQL（整块注释；当前不用）
+  <select id="selectRoots" parameterType="long" resultMap="RowMap">...</select>
+  <select id="selectChildrenByParentCode" resultMap="RowMap">...</select>
+  <select id="existsChildren" resultType="int">...</select>
+  -->
+
+</mapper>

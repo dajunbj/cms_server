@@ -21,7 +21,7 @@ public class ReceiptInfoListItem {
     /** 領収書画像の保存パス（相対 or 絶対パス） */
     private String imagePath;
 
-    /** 発行先（OCR抽出／手入力） */
+    /** 発行元（OCR抽出／手入力） */
     private String issuer;
 
     /** 発行日（yyyy-MM-dd） */

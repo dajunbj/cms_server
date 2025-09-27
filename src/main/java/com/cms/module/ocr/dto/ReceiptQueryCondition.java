@@ -18,7 +18,7 @@ public class ReceiptQueryCondition {
     /** 取得件数 (例: size, デフォルトは10) */
     private int limit;
 
-    /** 発行先の部分一致検索用 */
+    /** 発行元の部分一致検索用 */
     private String issuer;
 
     /** ステータスでの絞り込み (草稿/確認済/申請済/承認済/差戻し) */
