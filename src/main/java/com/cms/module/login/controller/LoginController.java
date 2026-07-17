@@ -16,12 +16,10 @@ import com.cms.base.controller.BaseController;
 import com.cms.common.util.JwtUtil;
 import com.cms.module.employee.entity.Employees;
 import com.cms.module.login.service.LoginService;
-import com.warrenstrange.googleauth.GoogleAuthenticator;
 
 import jakarta.servlet.http.HttpSession;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:8081") // 允许从指定域访问
 @RequestMapping("/auth")
 public class LoginController extends BaseController{
 
@@ -48,15 +46,27 @@ public class LoginController extends BaseController{
     public Map<String, Object> login(@RequestBody Map<String, Object> loginData,HttpSession session) {
        
     	Map<String, Object> response = new HashMap<>();
+    	//ログインID（画面）
     	String user = (String) loginData.get("username");
+    	//パスワード（画面）
     	String password = (String) loginData.get("password");  
     	Employees ct = service.getLoginInfo(user);
-    	String pwdHash = ct.getPassword_hash();  
-    	GoogleAuthenticator gAuth = new GoogleAuthenticator();
-    	boolean isValid = gAuth.authorize(ct.getAuth_code(), Integer.parseInt((String)loginData.get("authCode")));
+    	//2回認証コード取得（画面）
+    	String pwdHash = ct.getPassword_hash();
+    	//パスワード（DB）
+    	String pwd = ct.getPwd();
+    	
+    	//Googleの２次認証キーを作成する（初めて認証用のキーを作成する際に使われる。）
+//    	GoogleAuthenticator gAuth = new GoogleAuthenticator();
+//    	GoogleAuthenticatorKey key = gAuth.createCredentials();//ADD 20260716
+//    	String secret = key.getKey();
+//    	System.out.println("XXXXX:"+secret);
+    	//Google Authoriactorの認証コードを確認する
+//    	boolean isValid = gAuth.authorize(ct.getAuth_code(), Integer.parseInt((String)loginData.get("authCode")));
     	try {
-	    	if(isValid) {
-		        if (passwordEncoder.matches(password,pwdHash)) {
+//	    	if(isValid) {
+		        if (password.equals(pwd)) {
+			    //if (passwordEncoder.matches(password,pwdHash)) {
 		
 		            //ログイン情報をセッションに保存
 		            setLoginInfo(session, "userinfo", ct);
@@ -78,11 +88,11 @@ public class LoginController extends BaseController{
 		        	response.put("success", false);
 		        	response.put("message", "ユーザとパスワードが正しくないです。");
 		        }
-	        }
-	    	else {
-	        	response.put("success", false);
-	        	response.put("message", "一時認証コードが間違えています。");
-	    	}
+//	        }
+//	    	else {
+//	        	response.put("success", false);
+//	        	response.put("message", "一時認証コードが間違えています。");
+//	    	}
     	}
     	catch(Exception e) {
     		throw new RuntimeException("致命的なエラーが発生しました、管理者と連絡してください。");
