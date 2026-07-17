@@ -56,6 +56,7 @@ public class LoginController extends BaseController{
     	//パスワード（DB）
     	String pwd = ct.getPwd();
     	
+    	
     	//Googleの２次認証キーを作成する（初めて認証用のキーを作成する際に使われる。）
 //    	GoogleAuthenticator gAuth = new GoogleAuthenticator();
 //    	GoogleAuthenticatorKey key = gAuth.createCredentials();//ADD 20260716
